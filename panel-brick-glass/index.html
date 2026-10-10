@@ -1,0 +1,1540 @@
+<title>Panel, Brick, Glass</title>
+<meta name="description" content="An animated, side-by-side explainer comparing Soviet prefab panel blocks (panelkas), load-bearing brick buildings and modern glass-and-panel buildings.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Unbounded:wght@500;700&display=swap">
+<style>
+/* Layout: one architectural drawing sheet. A sheet index (chapter tabs) sits over a canvas stage with a HUD, then controls, the caption with a title block, and three readout columns. A comparison schedule and a strengths/weaknesses sheet sit below it. */
+:root{
+  --paper:#E8EBE6; --sheet:#F7F8F5; --ink:#1B2126; --ink-2:#55606A; --rule:#C5CBC5; --rule-2:#DCE0DA;
+  --signal:#E3A21A; --signal-ink:#7F5500;
+  --panel:#566A84; --brick:#AD452B; --glass:#137877;
+  --good:#2F7D4E; --mid:#B08515; --poor:#B5402F;
+  --sky-1:#C9DCE8; --sky-2:#EEF2EB; --ground:#A3AA9C; --ground-2:#7F8779;
+  --concrete:#BDC0B8; --concrete-2:#ACB0A8; --joint:#5B6058; --retro:#D9CDB4; --grime:#3B3A2F;
+  --brick-face:#A8553A; --mortar:#D7C8B6; --stone:#D9D1C3;
+  --cw-glass:#86AEBC; --cw-glass-2:#A8C6CF; --mullion:#3D4950; --spandrel:#4A5359; --clad:#CDBB9F;
+  --win:#3E5664; --win-lit:#F5D27A; --win-frame:#ECEAE4; --room:#FBFBF8;
+  --steel:#D9960F; --steel-2:#3E4A52;
+  --scene-ink:#1B2126; --scene-ink-2:#4F5A62;
+  --night:0;
+  --font-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --font-body:"Golos Text",system-ui,-apple-system,"Segoe UI",sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --paper:#0E1215; --sheet:#151A1E; --ink:#E3E7E2; --ink-2:#97A2A9; --rule:#2B3338; --rule-2:#20272C;
+    --signal:#F0B437; --signal-ink:#F0B437;
+    --panel:#93A7C2; --brick:#E47E60; --glass:#4CC6C1;
+    --good:#5DBE85; --mid:#E0B54A; --poor:#EE7A66;
+    --sky-1:#0B1622; --sky-2:#22303A; --ground:#2B312D; --ground-2:#1E2320;
+    --concrete:#5E625E; --concrete-2:#545853; --joint:#262926; --retro:#77705F; --grime:#050505;
+    --brick-face:#6F3B2B; --mortar:#8A7465; --stone:#76705F;
+    --cw-glass:#223744; --cw-glass-2:#2D4552; --mullion:#0E1317; --spandrel:#1E252A; --clad:#6A604F;
+    --win:#1B252B; --win-lit:#F2C66B; --win-frame:#3A444B; --room:#1B2125;
+    --steel:#E0A535; --steel-2:#A3AEB5;
+    --scene-ink:#E3E7E2; --scene-ink-2:#9AA5AC;
+    --night:1; color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#0E1215; --sheet:#151A1E; --ink:#E3E7E2; --ink-2:#97A2A9; --rule:#2B3338; --rule-2:#20272C;
+  --signal:#F0B437; --signal-ink:#F0B437;
+  --panel:#93A7C2; --brick:#E47E60; --glass:#4CC6C1;
+  --good:#5DBE85; --mid:#E0B54A; --poor:#EE7A66;
+  --sky-1:#0B1622; --sky-2:#22303A; --ground:#2B312D; --ground-2:#1E2320;
+  --concrete:#5E625E; --concrete-2:#545853; --joint:#262926; --retro:#77705F; --grime:#050505;
+  --brick-face:#6F3B2B; --mortar:#8A7465; --stone:#76705F;
+  --cw-glass:#223744; --cw-glass-2:#2D4552; --mullion:#0E1317; --spandrel:#1E252A; --clad:#6A604F;
+  --win:#1B252B; --win-lit:#F2C66B; --win-frame:#3A444B; --room:#1B2125;
+  --steel:#E0A535; --steel-2:#A3AEB5;
+  --scene-ink:#E3E7E2; --scene-ink-2:#9AA5AC;
+  --night:1; color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:16px/1.55 var(--font-body);-webkit-font-smoothing:antialiased}
+.page > *{min-width:0}
+.page{max-width:1180px;margin:0 auto;padding-inline:clamp(16px,3vw,32px);padding-block:clamp(24px,5vw,56px) 72px;display:grid;gap:clamp(28px,4vw,44px)}
+.eyebrow{font:500 12px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2);margin:0}
+h1{font:700 clamp(2.2rem,7vw,4.6rem)/1 var(--font-display);letter-spacing:-.025em;margin:.3em 0 .32em;text-wrap:balance}
+h1 .w-p{color:var(--panel)} h1 .w-b{color:var(--brick)} h1 .w-g{color:var(--glass)} h1 .sep{color:var(--rule)}
+.dek{max-width:64ch;font-size:clamp(1rem,1.7vw,1.15rem);color:var(--ink-2);margin:0;text-wrap:pretty}
+.dek em{font-style:normal;color:var(--ink);font-weight:500}
+
+/* drawing sheet */
+.sheet{background:var(--sheet);border:1px solid var(--ink);outline:1px solid var(--rule);outline-offset:4px;min-width:0}
+.index{display:flex;overflow-x:auto;border-bottom:1px solid var(--ink);scrollbar-width:thin}
+.index button{flex:1 0 auto;display:grid;gap:2px;justify-items:start;font:500 12px/1.2 var(--font-mono);letter-spacing:.04em;color:var(--ink-2);background:transparent;border:0;border-right:1px solid var(--rule);padding:10px 14px 12px;cursor:pointer;position:relative;text-align:left}
+.index button:last-child{border-right:0}
+.index button .n{font-size:10px;letter-spacing:.12em;opacity:.8}
+.index button .l{font-family:var(--font-body);font-size:13.5px;font-weight:600;letter-spacing:0;color:var(--ink)}
+.index button:hover{background:var(--rule-2)}
+.index button[aria-selected="true"]{background:var(--ink);color:var(--sheet)}
+.index button[aria-selected="true"] .l{color:var(--sheet)}
+.index button::after{content:"";position:absolute;left:0;bottom:0;height:3px;width:calc(var(--p,0)*100%);background:var(--signal)}
+.index button:focus-visible,.btn:focus-visible,.tour input:focus-visible,#scrub:focus-visible{outline:2px solid var(--signal);outline-offset:2px}
+
+.stage-wrap{position:relative;min-width:0}
+#stage{display:block;width:100%;height:auto}
+.hud{position:absolute;top:12px;left:14px;display:grid;gap:3px;pointer-events:none;max-width:45%}
+.hud-big{font:700 clamp(1.05rem,2.6vw,1.7rem)/1 var(--font-display);font-variant-numeric:tabular-nums;color:var(--scene-ink);letter-spacing:-.01em}
+.hud-small{font:500 10.5px/1.3 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--scene-ink-2)}
+.legend{position:absolute;top:12px;right:14px;display:grid;gap:4px;pointer-events:none;font:500 10px/1.2 var(--font-mono);letter-spacing:.06em;text-transform:uppercase;width:min(170px,34%)}
+.legend .ramp{height:8px;background:linear-gradient(90deg,#0b0726,#2e0d5e,#6b1a86,#a8277c,#dc3d55,#f4702a,#fbab1c,#fde45b,#fffbe3)}
+.legend .ends{display:flex;justify-content:space-between}
+/* the thermal camera view is always dark, whatever the page theme */
+.stage-wrap.ir .hud-big{color:#F3EEFF} .stage-wrap.ir .hud-small,.stage-wrap.ir .legend{color:#C2B8E3}
+
+.controls{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;padding:12px 16px;border-top:1px solid var(--ink)}
+.btn{font:600 13px/1 var(--font-body);padding:9px 14px;border:1px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;min-width:5.5em}
+.btn.primary{background:var(--ink);color:var(--sheet)}
+.btn:hover{background:var(--rule-2)} .btn.primary:hover{background:var(--ink-2);border-color:var(--ink-2)}
+#scrub{flex:1 1 160px;min-width:0;accent-color:var(--signal)}
+.tour{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink-2);cursor:pointer}
+.tour input{accent-color:var(--signal);width:16px;height:16px;margin:0}
+
+.caption-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:16px 36px;padding:22px 16px 18px;border-top:1px solid var(--rule)}
+.caption{min-width:0}
+.caption h2{font:500 clamp(1.15rem,2.5vw,1.55rem)/1.2 var(--font-display);margin:0 0 .45em;text-wrap:balance;letter-spacing:-.01em}
+.caption p{margin:0;max-width:70ch;color:var(--ink-2);text-wrap:pretty}
+.tblock{display:grid;grid-template-columns:repeat(3,minmax(0,auto));border:1px solid var(--ink);align-self:start;margin:0;min-width:0}
+.tblock div{padding:7px 11px;border-left:1px solid var(--rule);min-width:0}
+.tblock div:first-child{border-left:0}
+.tblock dt{font:500 9.5px/1.2 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.tblock dd{margin:3px 0 0;font:500 12px/1.3 var(--font-mono);color:var(--ink);font-variant-numeric:tabular-nums}
+
+.readout{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--rule)}
+.card{padding:18px 16px 20px;border-left:1px solid var(--rule);min-width:0;display:flex;flex-direction:column}
+.card:first-child{border-left:0}
+.card h3{display:flex;align-items:center;gap:9px;margin:0;font:500 13px/1.2 var(--font-display);letter-spacing:.01em}
+.big{font:500 clamp(1.45rem,3.2vw,2.15rem)/1.05 var(--font-display);margin:.55em 0 0;font-variant-numeric:tabular-nums;letter-spacing:-.02em;overflow-wrap:anywhere}
+.card[data-t="panel"] .big{color:var(--panel)} .card[data-t="brick"] .big{color:var(--brick)} .card[data-t="glass"] .big{color:var(--glass)}
+.unit{display:block;margin-top:6px;font:400 12px/1.35 var(--font-mono);color:var(--ink-2)}
+.rank{align-self:flex-start;display:inline-flex;align-items:center;gap:7px;margin:12px 0 10px;padding:3px 9px 3px 8px;border:1px solid var(--rule);font:500 10.5px/1.4 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink)}
+.rank::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--mid)}
+.rank.good::before{background:var(--good)} .rank.poor::before{background:var(--poor)}
+.rank[hidden]{display:none!important}
+.note{margin:0;font-size:14.5px;line-height:1.55;color:var(--ink-2);text-wrap:pretty}
+
+/* material swatches: a tiny sample of each facade */
+.sw{width:18px;height:18px;flex:none;border:1px solid var(--ink)}
+.sw.panel{background:linear-gradient(90deg,transparent 47%,var(--joint) 47% 53%,transparent 53%),linear-gradient(0deg,transparent 47%,var(--joint) 47% 53%,transparent 53%),var(--concrete)}
+.sw.brick{background:repeating-linear-gradient(0deg,var(--mortar) 0 1px,transparent 1px 4.5px),linear-gradient(90deg,var(--brick-face) 0 100%)}
+.sw.glass{background:linear-gradient(90deg,transparent 30%,var(--mullion) 30% 36%,transparent 36% 64%,var(--mullion) 64% 70%,transparent 70%),linear-gradient(0deg,var(--spandrel) 0 22%,var(--cw-glass) 22%)}
+
+/* schedule */
+.sec-head{display:grid;gap:8px;margin-bottom:18px}
+.sec-head h2{font:500 clamp(1.3rem,3vw,1.9rem)/1.15 var(--font-display);margin:0;letter-spacing:-.015em;text-wrap:balance}
+.sec-head p{margin:0;color:var(--ink-2);max-width:68ch}
+.table-scroll{overflow-x:auto;border:1px solid var(--ink);background:var(--sheet)}
+.sched{border-collapse:collapse;width:100%;min-width:660px;font-variant-numeric:tabular-nums}
+.sched th,.sched td{padding:12px 14px;border-bottom:1px solid var(--rule);text-align:left;vertical-align:top}
+.sched tbody tr:last-child th,.sched tbody tr:last-child td{border-bottom:0}
+.sched thead th{font:500 12px/1.2 var(--font-display);border-bottom:1px solid var(--ink);white-space:nowrap}
+.sched thead th span.h{display:inline-flex;align-items:center;gap:8px}
+.sched tbody th{font-weight:600;font-size:14.5px;width:26%}
+.sched tbody th small{display:block;font:400 11.5px/1.35 var(--font-mono);color:var(--ink-2);margin-top:3px}
+.sched td{width:24.6%}
+.sched td b{display:block;font:500 14.5px/1.3 var(--font-mono);color:var(--ink)}
+.sched td .bar{display:block;height:6px;margin-top:8px;background:var(--rule-2);position:relative}
+.sched td .bar::after{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v)*100%)}
+.sched td.p .bar::after{background:var(--panel)} .sched td.b .bar::after{background:var(--brick)} .sched td.g .bar::after{background:var(--glass)}
+.sched td .tag{display:inline-block;margin-top:7px;font:500 10px/1.3 var(--font-mono);letter-spacing:.08em;text-transform:uppercase;color:var(--ink-2)}
+.sched td .tag.best{color:var(--good)} .sched td .tag.worst{color:var(--poor)}
+
+.pc{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:1px solid var(--ink);background:var(--sheet)}
+.pc article{padding:20px 18px 22px;border-left:1px solid var(--rule);min-width:0}
+.pc article:first-child{border-left:0}
+.pc h3{display:flex;align-items:center;gap:10px;margin:0 0 4px;font:500 15px/1.2 var(--font-display)}
+.pc .era{margin:0 0 14px;font:400 12px/1.3 var(--font-mono);color:var(--ink-2)}
+.pc h4{margin:14px 0 6px;font:500 10.5px/1.2 var(--font-mono);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
+.pc ul{list-style:none;margin:0;padding:0;display:grid;gap:6px}
+.pc li{position:relative;padding-left:20px;font-size:14.5px;line-height:1.45}
+.pc li::before{position:absolute;left:0;top:0;font:600 14px/1.45 var(--font-mono)}
+.pc .plus li::before{content:"+";color:var(--good)} .pc .minus li::before{content:"−";color:var(--poor)}
+.pc .best-for{margin:16px 0 0;padding-top:12px;border-top:1px solid var(--rule);font-size:14px;color:var(--ink-2)}
+.pc .best-for b{color:var(--ink);font-weight:600}
+
+.notes{border-top:1px solid var(--ink);padding-top:18px;display:grid;gap:10px;font-size:13.5px;color:var(--ink-2);max-width:86ch}
+.notes h2{font:500 11px/1.2 var(--font-mono);letter-spacing:.14em;text-transform:uppercase;margin:0;color:var(--ink)}
+.notes p{margin:0}
+.notes a{color:var(--ink);text-underline-offset:2px}
+.notes ul{margin:0;padding-left:18px;display:grid;gap:4px}
+
+@media (max-width:760px){
+  .caption-row{grid-template-columns:1fr}
+  .readout,.pc{grid-template-columns:1fr}
+  .card,.pc article{border-left:0;border-top:1px solid var(--rule)}
+  .card:first-child,.pc article:first-child{border-top:0}
+  .index button{padding:9px 11px 11px}
+  .tblock{grid-template-columns:repeat(3,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion: reduce){ .index button::after{transition:none} }
+</style>
+
+<div class="page">
+  <header>
+    <p class="eyebrow">How apartment buildings differ</p>
+    <h1><span class="w-p">Panel</span><span class="sep">,</span> <span class="w-b">Brick</span><span class="sep">,</span> <span class="w-g">Glass</span></h1>
+    <p class="dek">Three ways cities stack homes: the Soviet prefab <em>panelka</em>, the load-bearing <em>brick</em> block, and the modern concrete frame wrapped in <em>glass and panels</em>. Watch each one get built, carry its weight, lose heat, leak sound, fit a family, age and survive an earthquake, drawn side by side on the same street.</p>
+  </header>
+
+  <section class="sheet" aria-label="Animated comparison">
+    <nav class="index" id="index" role="tablist" aria-label="Chapters"></nav>
+    <div class="stage-wrap" id="stageWrap">
+      <canvas id="stage" role="img" aria-label="Animated drawing of a panel block, a brick block and a glass building side by side"></canvas>
+      <div class="hud" aria-hidden="true"><span class="hud-big" id="hudBig"></span><span class="hud-small" id="hudSmall"></span></div>
+      <div class="legend" id="legend" aria-hidden="true" hidden><span>Facade surface temp.</span><i class="ramp"></i><span class="ends"><b>−20 °C</b><b>−8 °C</b></span></div>
+    </div>
+    <div class="controls">
+      <button class="btn primary" id="play" type="button">Pause</button>
+      <button class="btn" id="restart" type="button">Replay chapter</button>
+      <input type="range" id="scrub" min="0" max="1000" value="0" aria-label="Position in chapter">
+      <label class="tour" for="tour"><input type="checkbox" id="tour" checked> Play all chapters</label>
+    </div>
+    <div class="caption-row">
+      <div class="caption" aria-live="polite">
+        <h2 id="capTitle">Three ways to stack homes</h2>
+        <p id="capLede"></p>
+      </div>
+      <dl class="tblock">
+        <div><dt>Sheet</dt><dd id="tbSheet">01 / 09</dd></div>
+        <div><dt>View</dt><dd id="tbView">Street elevation</dd></div>
+        <div><dt>Scale</dt><dd id="tbScale">Not to scale</dd></div>
+      </dl>
+    </div>
+    <div class="readout" id="readout">
+      <article class="card" data-t="panel"><h3><i class="sw panel"></i>Panelka</h3><p class="big"></p><span class="unit"></span><span class="rank" hidden></span><p class="note"></p></article>
+      <article class="card" data-t="brick"><h3><i class="sw brick"></i>Brick block</h3><p class="big"></p><span class="unit"></span><span class="rank" hidden></span><p class="note"></p></article>
+      <article class="card" data-t="glass"><h3><i class="sw glass"></i>Glass &amp; panel</h3><p class="big"></p><span class="unit"></span><span class="rank" hidden></span><p class="note"></p></article>
+    </div>
+  </section>
+
+  <section aria-labelledby="schedHead">
+    <div class="sec-head">
+      <p class="eyebrow">Schedule of comparisons</p>
+      <h2 id="schedHead">All the numbers in one place</h2>
+      <p>Typical values for buildings as originally built. Bars show size, not quality. Check the label to see whether more is better. Real buildings vary a lot by series, country and builder.</p>
+    </div>
+    <div class="table-scroll">
+      <table class="sched">
+        <thead><tr>
+          <th scope="col">Measure</th>
+          <th scope="col"><span class="h"><i class="sw panel"></i>Panelka</span></th>
+          <th scope="col"><span class="h"><i class="sw brick"></i>Brick block</span></th>
+          <th scope="col"><span class="h"><i class="sw glass"></i>Glass &amp; panel</span></th>
+        </tr></thead>
+        <tbody>
+          <tr><th scope="row">Time to build, 9 storeys<small>months, groundworks to handover · less is better</small></th>
+            <td class="p"><b>6–12</b><i class="bar" style="--v:.3"></i><span class="tag best">Fastest</span></td>
+            <td class="b"><b>18–30</b><i class="bar" style="--v:.8"></i><span class="tag worst">Slowest</span></td>
+            <td class="g"><b>12–20</b><i class="bar" style="--v:.53"></i><span class="tag">Indicative</span></td></tr>
+          <tr><th scope="row">Structure, per floor<small>days for the frame or walls of one storey</small></th>
+            <td class="p"><b>3–7</b><i class="bar" style="--v:.17"></i><span class="tag">Crane-assembled panels</span></td>
+            <td class="b"><b>15–30</b><i class="bar" style="--v:.75"></i><span class="tag">Laid by hand</span></td>
+            <td class="g"><b>5–10</b><i class="bar" style="--v:.25"></i><span class="tag">Cast-in-place slab cycle</span></td></tr>
+          <tr><th scope="row">External wall U-value<small>W/m²K · lower loses less heat</small></th>
+            <td class="p"><b>0.9–1.3</b><i class="bar" style="--v:.73"></i><span class="tag worst">Joints add 20–40%</span></td>
+            <td class="b"><b>1.0–1.3</b><i class="bar" style="--v:.77"></i><span class="tag">51–64 cm solid brick</span></td>
+            <td class="g"><b>0.15–0.35 wall · 0.5–1.9 glazed</b><i class="bar" style="--v:.17"></i><span class="tag best">Insulated, but glass loses 3–6× more</span></td></tr>
+          <tr><th scope="row">Summer overheating<small>free-running, no air conditioning</small></th>
+            <td class="p"><b>Moderate</b><i class="bar" style="--v:.55"></i><span class="tag">Top floors hot</span></td>
+            <td class="b"><b>Low</b><i class="bar" style="--v:.25"></i><span class="tag best">Thermal mass</span></td>
+            <td class="g"><b>High</b><i class="bar" style="--v:.9"></i><span class="tag worst">Solar gain</span></td></tr>
+          <tr><th scope="row">Sound between flats<small>airborne Rw, dB · more is better</small></th>
+            <td class="p"><b>45–50</b><i class="bar" style="--v:.6"></i><span class="tag worst">Neighbours audible</span></td>
+            <td class="b"><b>55–60</b><i class="bar" style="--v:.72"></i><span class="tag best">Massive walls</span></td>
+            <td class="g"><b>50–60</b><i class="bar" style="--v:.68"></i><span class="tag">Depends on party wall</span></td></tr>
+          <tr><th scope="row">Ceiling height<small>metres · more is better</small></th>
+            <td class="p"><b>2.5–2.7</b><i class="bar" style="--v:.69"></i><span class="tag worst">Lowest</span></td>
+            <td class="b"><b>2.9–3.5</b><i class="bar" style="--v:.87"></i><span class="tag best">Highest</span></td>
+            <td class="g"><b>2.6–3.0</b><i class="bar" style="--v:.75"></i><span class="tag">Premium 3.0+</span></td></tr>
+          <tr><th scope="row">Typical two-room flat<small>m², whole flat</small></th>
+            <td class="p"><b>40–52</b><i class="bar" style="--v:.58"></i><span class="tag">6–8 m² kitchen</span></td>
+            <td class="b"><b>55–65</b><i class="bar" style="--v:.75"></i><span class="tag best">Largest rooms</span></td>
+            <td class="g"><b>45–60</b><i class="bar" style="--v:.66"></i><span class="tag">Market-dependent</span></td></tr>
+          <tr><th scope="row">Layout flexibility<small>can you move interior walls?</small></th>
+            <td class="p"><b>Very low</b><i class="bar" style="--v:.12"></i><span class="tag worst">Bearing cross walls</span></td>
+            <td class="b"><b>Low–medium</b><i class="bar" style="--v:.4"></i><span class="tag">Spine wall stays</span></td>
+            <td class="g"><b>High</b><i class="bar" style="--v:.9"></i><span class="tag best">Columns and core only</span></td></tr>
+          <tr><th scope="row">Service life<small>years · more is better</small></th>
+            <td class="p"><b>50 design · 70–100 used</b><i class="bar" style="--v:.55"></i><span class="tag">If joints are maintained</span></td>
+            <td class="b"><b>100–150+</b><i class="bar" style="--v:.95"></i><span class="tag best">Longest</span></td>
+            <td class="g"><b>50–100 frame · 20–40 facade</b><i class="bar" style="--v:.6"></i><span class="tag worst">Skin replaced once or twice</span></td></tr>
+          <tr><th scope="row">Relative build cost<small>panelka = 100 · rough estimate</small></th>
+            <td class="p"><b>100</b><i class="bar" style="--v:.4"></i><span class="tag best">Cheapest</span></td>
+            <td class="b"><b>120–150</b><i class="bar" style="--v:.54"></i><span class="tag">Labour-heavy</span></td>
+            <td class="g"><b>150–250</b><i class="bar" style="--v:.8"></i><span class="tag worst">Curtain wall is costly</span></td></tr>
+          <tr><th scope="row">Embodied carbon<small>kgCO₂e per m² floor, materials only (A1–A3) · rough estimate</small></th>
+            <td class="p"><b>300–500</b><i class="bar" style="--v:.44"></i><span class="tag">Cement-heavy</span></td>
+            <td class="b"><b>250–450</b><i class="bar" style="--v:.39"></i><span class="tag best">Lowest</span></td>
+            <td class="g"><b>500–900</b><i class="bar" style="--v:.78"></i><span class="tag worst">Aluminium and glass</span></td></tr>
+          <tr><th scope="row">Earthquake behaviour<small>as typically built</small></th>
+            <td class="p"><b>Good</b><i class="bar" style="--v:.75"></i><span class="tag best">Rigid, redundant box</span></td>
+            <td class="b"><b>Poor if unreinforced</b><i class="bar" style="--v:.25"></i><span class="tag worst">Brittle</span></td>
+            <td class="g"><b>Good if code-designed</b><i class="bar" style="--v:.75"></i><span class="tag best">Ductile frame</span></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="pcHead">
+    <div class="sec-head">
+      <p class="eyebrow">Strengths and weaknesses</p>
+      <h2 id="pcHead">What each one is good at</h2>
+    </div>
+    <div class="pc">
+      <article>
+        <h3><i class="sw panel"></i>Panelka</h3>
+        <p class="era">Large-panel prefab · 1959–1990s</p>
+        <h4>Strengths</h4>
+        <ul class="plus"><li>Cheapest and fastest of the three, by a wide margin</li><li>Rigid box of walls copes well with earthquakes</li><li>Structure often outlasts its design life</li><li>Housed tens of millions of families who had nowhere else to live</li></ul>
+        <h4>Weaknesses</h4>
+        <ul class="minus"><li>Panel joints leak air and water, causing cold bridges and mould</li><li>You can hear the neighbours, their footsteps and their plumbing</li><li>Low 2.5 m ceilings, small kitchens</li><li>Walls are structural, so layouts are fixed</li></ul>
+        <p class="best-for"><b>Best when</b> retrofitted with external insulation, new windows and resealed joints.</p>
+      </article>
+      <article>
+        <h3><i class="sw brick"></i>Brick block</h3>
+        <p class="era">Load-bearing masonry · 1930s–1950s</p>
+        <h4>Strengths</h4>
+        <ul class="plus"><li>Lasts a century or more with basic care</li><li>High ceilings and generous rooms</li><li>Heavy walls block sound and keep summers cool</li><li>Lowest embodied carbon of the three</li></ul>
+        <h4>Weaknesses</h4>
+        <ul class="minus"><li>Slow and labour-intensive to build</li><li>Thick walls eat floor area, and still lose heat</li><li>Prone to damp; old timber floors decay</li><li>Unreinforced brick is brittle in earthquakes</li></ul>
+        <p class="best-for"><b>Best when</b> kept dry, repointed and fitted with modern windows and roof insulation.</p>
+      </article>
+      <article>
+        <h3><i class="sw glass"></i>Glass &amp; panel</h3>
+        <p class="era">Concrete frame + curtain wall · 2000s–today</p>
+        <h4>Strengths</h4>
+        <ul class="plus"><li>Free plans: only columns and the core are fixed</li><li>Insulated panels make the best walls of the three</li><li>Lots of daylight and views; can go very tall</li><li>Ductile frames ride out earthquakes when built to code</li></ul>
+        <h4>Weaknesses</h4>
+        <ul class="minus"><li>Overheats in sun and depends on air conditioning</li><li>The glass skin wears out in 20–40 years</li><li>Most expensive, highest embodied carbon</li><li>Noise can creep along slab edges and light partitions</li></ul>
+        <p class="best-for"><b>Best when</b> glass is limited to where it earns its place, with external shading and solar-control coatings.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="notes">
+    <h2>Notes and sources</h2>
+    <p>Figures are typical ranges for buildings as originally built, rounded for teaching. Build speeds, sound values, cost indices and embodied-carbon ranges are indicative engineering estimates, not measurements of any one building. The summer temperatures in chapter 5 come from a simple illustrative model, not from measurements. All three buildings are drawn at nine storeys so they can be compared like for like. Their heights differ only because their storey heights differ.</p>
+    <ul>
+      <li>Panelka design life is quoted as both 25 and 50 years. Neither figure is well documented. A Belarusian study of the 1-464A series found spare structural capacity and 20–25 years of extra life if the joints are resealed (<a href="https://journal.bstu.by/index.php/bstu_herald/article/download/1084/604/8399" target="_blank" rel="noopener">BSTU Herald</a>).</li>
+      <li>Large-panel buildings generally performed well in the 1988 Spitak earthquake, credited to their rigidity and redundancy. Precast concrete frame buildings and old unreinforced masonry suffered most of the collapses (<a href="https://world-housing.net/?p=46152" target="_blank" rel="noopener">World Housing Encyclopedia</a>). Minor joint cracking was reported in panel blocks.</li>
+      <li>Stalinka walls and ceilings: <a href="https://en.wikipedia.org/wiki/Stalinka" target="_blank" rel="noopener">Wikipedia, “Stalinka”</a>. Curtain-wall U-values: manufacturer data for aluminium systems with double and triple glazing.</li>
+      <li>Embodied carbon boundaries differ between studies. The EU whole-life baseline averages around 600 kgCO₂e/m² (<a href="https://vbn.aau.dk/files/518767365/EU_ECB_2_Setting_the_baseline.pdf" target="_blank" rel="noopener">Aalborg University for the EU</a>).</li>
+    </ul>
+  </footer>
+</div>
+
+<script>
+(() => {
+'use strict';
+const root = document.documentElement;
+const cv = document.getElementById('stage');
+const ctx = cv.getContext('2d');
+const wrapEl = document.getElementById('stageWrap');
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---------- small helpers ---------- */
+const clamp = (v, a, b) => v < a ? a : v > b ? b : v;
+const lerp = (a, b, t) => a + (b - a) * t;
+const ease = t => t < .5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
+const seg = (t, a, b) => clamp((t - a) / (b - a), 0, 1);
+const rnd = s => { const x = Math.sin(s * 127.1 + 311.7) * 43758.5453; return x - Math.floor(x); };
+const PI = Math.PI;
+const rgbCache = new Map();
+function rgb(h) {
+  let v = rgbCache.get(h);
+  if (!v) { const n = parseInt(h.replace('#', ''), 16); v = [n >> 16 & 255, n >> 8 & 255, n & 255]; if (rgbCache.size < 400) rgbCache.set(h, v); }
+  return v;
+}
+const hex = c => '#' + c.map(v => Math.round(clamp(v, 0, 255)).toString(16).padStart(2, '0')).join('');
+const A = (h, a) => { const c = rgb(h); return `rgba(${c[0]},${c[1]},${c[2]},${a})`; };
+const mix = (h1, h2, t) => { const a = rgb(h1), b = rgb(h2); return hex([0, 1, 2].map(i => a[i] + (b[i] - a[i]) * t)); };
+/* thermal camera palette: cold → hot */
+const THP = ['#0b0726', '#2e0d5e', '#6b1a86', '#a8277c', '#dc3d55', '#f4702a', '#fbab1c', '#fde45b', '#fffbe3'].map(rgb);
+function th(v) {
+  v = clamp(v, 0, 1) * (THP.length - 1);
+  const i = Math.min(THP.length - 2, Math.floor(v)), f = v - i, a = THP[i], b = THP[i + 1];
+  return `rgb(${a[0] + (b[0] - a[0]) * f | 0},${a[1] + (b[1] - a[1]) * f | 0},${a[2] + (b[2] - a[2]) * f | 0})`;
+}
+/* smooth interpolation through [x, y] key points */
+function curve(pts, x) {
+  if (x <= pts[0][0]) return pts[0][1];
+  for (let i = 1; i < pts.length; i++) if (x <= pts[i][0]) {
+    const [x0, y0] = pts[i - 1], [x1, y1] = pts[i], f = (1 - Math.cos(PI * (x - x0) / (x1 - x0))) / 2;
+    return y0 + (y1 - y0) * f;
+  }
+  return pts[pts.length - 1][1];
+}
+
+/* ---------- theme ---------- */
+const C = {}, F = {}, P = {};
+const TOKENS = ['ink', 'ink-2', 'rule', 'sheet', 'signal', 'panel', 'brick', 'glass', 'good', 'mid', 'poor', 'sky-1', 'sky-2', 'ground', 'ground-2', 'concrete', 'concrete-2', 'joint', 'retro', 'grime', 'brick-face', 'mortar', 'stone', 'cw-glass', 'cw-glass-2', 'mullion', 'spandrel', 'clad', 'win', 'win-lit', 'win-frame', 'room', 'steel', 'steel-2', 'scene-ink', 'scene-ink-2'];
+function readTheme() {
+  const cs = getComputedStyle(root);
+  for (const k of TOKENS) C[k] = cs.getPropertyValue('--' + k).trim();
+  C.night = cs.getPropertyValue('--night').trim() === '1';
+  F.display = cs.getPropertyValue('--font-display').trim();
+  F.mono = cs.getPropertyValue('--font-mono').trim();
+  F.body = cs.getPropertyValue('--font-body').trim();
+  makePatterns();
+}
+function makePatterns() {
+  if (!C.mortar) return;
+  const tw = 18, tht = 8, c = document.createElement('canvas');
+  c.width = tw * DPR; c.height = tht * DPR;
+  const g = c.getContext('2d'); g.scale(DPR, DPR);
+  g.fillStyle = C.mortar; g.fillRect(0, 0, tw, tht);
+  for (let r = 0; r < 2; r++) {
+    const off = r ? 4.5 : 0;
+    for (let k = -1; k < 3; k++) {
+      g.fillStyle = mix(C['brick-face'], C.joint, rnd(r * 7 + k * 3 + 1) * .22);
+      g.fillRect(off + k * 9 + .5, r * 4 + .5, 8, 3);
+    }
+  }
+  P.brick = ctx.createPattern(c, 'repeat');
+  try { P.brick.setTransform(new DOMMatrix([1 / DPR, 0, 0, 1 / DPR, 0, 0])); } catch (e) { /* older browsers: pattern stays at device scale */ }
+}
+
+/* ---------- layout ---------- */
+const FLOORS = 9;
+const T = [
+  { key: 'panel', name: 'Panelka', ftf: 2.8 },
+  { key: 'brick', name: 'Brick block', ftf: 3.6 },
+  { key: 'glass', name: 'Glass & panel', ftf: 3.2 },
+];
+let W = 0, H = 0, DPR = 1;
+const L = {};
+function resize() {
+  DPR = Math.min(2, window.devicePixelRatio || 1);
+  W = Math.max(280, wrapEl.clientWidth);
+  H = Math.round(clamp(W * .56, 430, 640));
+  cv.width = Math.round(W * DPR); cv.height = Math.round(H * DPR); cv.style.height = H + 'px';
+  const colW = W / 3;
+  L.colW = colW; L.ground = H - 62; L.top = 84;
+  L.ppm = (L.ground - L.top) / (FLOORS * 3.6 + 1.2);
+  L.bw = Math.min(colW * .62, 230); L.margin = (colW - L.bw) / 2;
+  L.small = W < 640;
+  L.fsName = L.small ? 10.5 : 13; L.fsSub = L.small ? 9 : 11; L.fsTag = L.small ? 9 : 10.5;
+  L.b = T.map((tp, i) => {
+    const cx = colW * (i + .5), fh = tp.ftf * L.ppm;
+    return { i, cx, x: cx - L.bw / 2, w: L.bw, fh, h: fh * FLOORS, top: L.ground - fh * FLOORS, col: { x: colW * i, w: colW } };
+  });
+  makeCracks();
+  makePatterns();
+}
+
+/* ---------- drawing primitives ---------- */
+let gt = 0; // ambient clock (seconds), advances while playing
+const jit = s => .03 * Math.sin(gt * 2.2 + s * 1.7);
+function rr(x, y, w, h, r) { ctx.beginPath(); if (ctx.roundRect) ctx.roundRect(x, y, w, h, r); else ctx.rect(x, y, w, h); }
+function seg2(x1, y1, x2, y2) { ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke(); }
+function fitFont(s, weight, size, fam, maxW) {
+  let fs = size; ctx.font = `${weight} ${fs}px ${fam}`;
+  while (fs > 7 && ctx.measureText(s).width > maxW) { fs -= .5; ctx.font = `${weight} ${fs}px ${fam}`; }
+  return ctx.font;
+}
+function wrapText(text, maxW) {
+  const words = text.split(' '), lines = []; let cur = '';
+  for (const w of words) { const t2 = cur ? cur + ' ' + w : w; if (ctx.measureText(t2).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t2; }
+  if (cur) lines.push(cur);
+  return lines;
+}
+/* label pill; y is the bottom edge unless opt.below */
+function tag(x, y, text, opt = {}) {
+  const fs = opt.fs || L.fsTag;
+  ctx.font = `500 ${fs}px ${F.mono}`;
+  const maxW = opt.maxW || L.colW - 12;
+  const lines = wrapText(text, maxW - 10);
+  const lw = Math.max(...lines.map(l => ctx.measureText(l).width));
+  const w = lw + 10, lh = fs + 3, h = lines.length * lh + 6;
+  let x0 = opt.align === 'left' ? x : opt.align === 'right' ? x - w : x - w / 2;
+  x0 = clamp(x0, 3, W - w - 3);
+  const y0 = opt.below ? y : y - h;
+  rr(x0, y0, w, h, 2);
+  ctx.fillStyle = opt.bg || C.sheet; ctx.fill();
+  ctx.lineWidth = 1; ctx.strokeStyle = opt.border || C.rule; ctx.stroke();
+  ctx.fillStyle = opt.fg || C['scene-ink']; ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+  lines.forEach((l, j) => ctx.fillText(l, x0 + 5, y0 + 4 + j * lh));
+  ctx.textBaseline = 'alphabetic';
+  return { x: x0, y: y0, w, h };
+}
+const IRTAG = { bg: '#150b31', fg: '#F3EEFF', border: '#3d2a74' };
+
+function street(kind = 'day', opt = {}) {
+  const g = ctx.createLinearGradient(0, 0, 0, L.ground);
+  if (kind === 'thermal') { g.addColorStop(0, '#06041a'); g.addColorStop(1, '#170b3a'); }
+  else {
+    let a = C['sky-1'], b = C['sky-2'];
+    if (kind === 'hot') { const w = opt.warm ?? .4; a = mix(a, '#E9A048', w * .45); b = mix(b, '#F6C46E', w * .8); }
+    g.addColorStop(0, a); g.addColorStop(1, b);
+  }
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, L.ground);
+  if (kind !== 'thermal') skyDecor(kind);
+  const off = opt.off || 0, ir = kind === 'thermal';
+  ctx.fillStyle = ir ? '#0b0622' : C.sheet; ctx.fillRect(0, L.ground, W, H - L.ground);
+  ctx.fillStyle = ir ? '#22114a' : C.ground; ctx.fillRect(0, L.ground, W, 9);
+  ctx.save(); ctx.beginPath(); ctx.rect(0, L.ground, W, 9); ctx.clip();
+  ctx.strokeStyle = ir ? '#3a1f73' : C['ground-2']; ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = -24 + ((off % 8) + 8) % 8; x < W + 16; x += 8) { ctx.moveTo(x, L.ground + 9); ctx.lineTo(x + 9, L.ground); }
+  ctx.stroke(); ctx.restore();
+  ctx.fillStyle = ir ? '#4a2a8c' : C['ground-2']; ctx.fillRect(0, L.ground, W, 1.5);
+}
+function skyDecor(kind) {
+  if (C.night) {
+    for (let n = 0; n < 46; n++) {
+      ctx.fillStyle = A('#FFFFFF', .25 + .45 * rnd(n + 3) * (.7 + .3 * Math.sin(gt * 1.3 + n)));
+      ctx.fillRect(rnd(n) * W, rnd(n + 50) * L.ground * .55, 1.3, 1.3);
+    }
+    return;
+  }
+  for (let n = 0; n < 5; n++) {
+    const sp = 5 + rnd(n + 1) * 7, span = W + 260;
+    const x = ((rnd(n) * span + gt * sp) % span) - 130, y = 20 + rnd(n + 9) * Math.max(20, L.top - 20), s = .55 + rnd(n + 4) * .7;
+    ctx.fillStyle = A('#FFFFFF', kind === 'hot' ? .3 : .55);
+    ctx.beginPath();
+    ctx.ellipse(x, y, 26 * s, 8 * s, 0, 0, 7); ctx.ellipse(x + 16 * s, y - 5 * s, 16 * s, 9 * s, 0, 0, 7); ctx.ellipse(x - 14 * s, y - 2 * s, 14 * s, 7 * s, 0, 0, 7);
+    ctx.fill();
+  }
+}
+function drafting() {
+  ctx.fillStyle = C.sheet; ctx.fillRect(0, 0, W, H);
+  ctx.strokeStyle = A(C.rule, .45); ctx.lineWidth = 1; ctx.beginPath();
+  for (let x = 20; x < W; x += 20) { ctx.moveTo(x + .5, 0); ctx.lineTo(x + .5, L.ground); }
+  for (let y = 20; y < L.ground; y += 20) { ctx.moveTo(0, y + .5); ctx.lineTo(W, y + .5); }
+  ctx.stroke();
+  ctx.fillStyle = C['scene-ink-2']; ctx.fillRect(0, L.ground, W, 1);
+}
+function names(subs, ir) {
+  for (let i = 0; i < 3; i++) {
+    const b = L.b[i], mw = L.colW - 14;
+    ctx.font = fitFont(T[i].name, 500, L.fsName, F.display, mw - 14);
+    const nw = ctx.measureText(T[i].name).width;
+    ctx.fillStyle = ir ? '#F3EEFF' : C['scene-ink']; ctx.textAlign = 'center'; ctx.textBaseline = 'alphabetic';
+    ctx.fillText(T[i].name, b.cx + 7, L.ground + 29);
+    ctx.fillStyle = C[T[i].key]; ctx.fillRect(b.cx + 7 - nw / 2 - 13, L.ground + 29 - L.fsName * .8, L.fsName * .8, L.fsName * .8);
+    if (subs && subs[i]) {
+      ctx.font = fitFont(subs[i], 400, L.fsSub, F.mono, mw);
+      ctx.fillStyle = ir ? '#C2B8E3' : C['scene-ink-2'];
+      ctx.fillText(subs[i], b.cx, L.ground + 46);
+    }
+  }
+}
+function bar(i, frac, y, col) {
+  const b = L.b[i];
+  ctx.fillStyle = A(C['scene-ink-2'], .2); ctx.fillRect(b.x, y, b.w, 3);
+  ctx.fillStyle = col || C[T[i].key]; ctx.fillRect(b.x, y, b.w * clamp(frac, 0, 1), 3);
+}
+
+/* ---------- windows ---------- */
+function win(x, y, w, h, s, o, arch) {
+  const ir = o.mode === 'thermal';
+  const path = () => {
+    ctx.beginPath();
+    if (arch) { const r = w / 2; ctx.moveTo(x, y + h); ctx.lineTo(x, y + r); ctx.arc(x + r, y + r, r, PI, 0); ctx.lineTo(x + w, y + h); ctx.closePath(); }
+    else ctx.rect(x, y, w, h);
+  };
+  path();
+  if (ir) { ctx.fillStyle = th(o.V.win + jit(s)); ctx.fill(); if (o.hot) o.hot.push({ x: x + w / 2, y: y + h * .3, v: o.V.win }); return; }
+  const lit = C.night && rnd(s) < .42 && Math.sin(gt * .25 + s * 3.1) > -.75;
+  ctx.fillStyle = lit ? C['win-lit'] : C.win; ctx.fill();
+  if (o.heat) { ctx.fillStyle = A('#FF6A1A', o.heat); ctx.fill(); }
+  if (!lit && !C.night) {
+    const ty = y + (arch ? w / 2 : 0);
+    ctx.fillStyle = A('#FFFFFF', .17); ctx.beginPath(); ctx.moveTo(x, ty); ctx.lineTo(x + w * .55, ty); ctx.lineTo(x, y + h * .6); ctx.fill();
+  }
+  if (w > 6) {
+    ctx.strokeStyle = o.retroWin ? '#F4F4F0' : C['win-frame']; ctx.lineWidth = .8;
+    path(); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(x + w / 2, y + (arch ? w / 2 : 0)); ctx.lineTo(x + w / 2, y + h);
+    ctx.moveTo(x, y + h * .32); ctx.lineTo(x + w, y + h * .32); ctx.stroke();
+  }
+}
+
+/* ---------- building renderers ---------- */
+/* thermal brightness ~ outside surface temperature rise, which tracks U-value */
+const VT = {
+  panel: { wall: .42, joint: .95, win: .86, slab: .8, roof: .62, door: .8 },
+  brick: { wall: .36, plinth: .4, win: .86, lintel: .5, cornice: .46, door: .8 },
+  glass: { vision: .4, frame: .58, spandrel: .16, clad: .07, win: .36, slab: .42, door: .55, roof: .12 },
+};
+const FULL = { placed: 1, h: 1, frame: 1, skin: 1 };
+
+function panelFloor(b, f, yb, yt, st, o) {
+  const n = 6, pw = b.w / n, fh = yb - yt, ir = o.mode === 'thermal', V = VT.panel;
+  const cnt = Math.min(n, Math.floor((st.placed ?? 1) * n + 1e-6));
+  if (!cnt) return;
+  const retro = o.retro && o.retro(f);
+  if (retro) { ctx.fillStyle = C.retro; ctx.fillRect(b.x - 2, yt, b.w + 4, fh + .5); }
+  for (let k = 0; k < cnt; k++) {
+    const x = b.x + k * pw, s = f * 17 + k * 5 + 1;
+    if (!retro) {
+      ctx.fillStyle = ir ? th(V.wall + jit(s)) : mix(C.concrete, C['concrete-2'], rnd(s));
+      ctx.fillRect(x, yt, pw + .3, fh + .3);
+    }
+    const ww = pw * .46, wh = fh * .5, wx = x + (pw - ww) / 2, wy = yt + fh * .2;
+    if (f === 0 && k === 2) {
+      ctx.fillStyle = ir ? th(V.door) : C.win; ctx.fillRect(x + pw * .3, yt + fh * .32, pw * .4, fh * .68);
+      ctx.fillStyle = ir ? th(.5) : C.joint; ctx.fillRect(x + pw * .18, yt + fh * .27, pw * .64, Math.max(2, fh * .06));
+      if (ir && o.hot) o.hot.push({ x: x + pw / 2, y: yt + fh * .5, v: V.door });
+    } else win(wx, wy, ww, wh, s, Object.assign(o, { retroWin: retro }));
+    if (f > 0 && (k === 1 || k === 4)) {
+      const bx = x + pw * .1, by = wy + wh * .55, bw2 = pw * .8, bh = yb - by;
+      ctx.fillStyle = ir ? th(V.slab + jit(s + 3)) : retro ? mix(C.retro, C.joint, .15) : mix(C.concrete, C.joint, .28);
+      ctx.fillRect(bx, by, bw2, bh - .5);
+      if (ir) { if (o.hot) o.hot.push({ x: bx + bw2 / 2, y: yb - 2, v: V.slab }); }
+      else { ctx.fillStyle = A(C.joint, .35); for (let r = 1; r < 5; r++) ctx.fillRect(bx + bw2 * r / 5, by + 1, .8, bh - 3); }
+    }
+  }
+  if (!retro) {
+    ctx.strokeStyle = ir ? th(V.joint + jit(f)) : C.joint; ctx.lineWidth = ir ? 2.2 : 1;
+    ctx.beginPath();
+    for (let k = 0; k <= cnt; k++) { const x = b.x + k * pw; ctx.moveTo(x, yt); ctx.lineTo(x, yb); }
+    ctx.moveTo(b.x, yt); ctx.lineTo(b.x + cnt * pw, yt);
+    ctx.stroke();
+    if (ir && o.hot) for (let k = 1; k < cnt; k++) o.hot.push({ x: b.x + k * pw, y: yt + fh * .5, v: V.joint });
+    const d = !ir && o.dirt ? o.dirt(f) : 0;
+    if (d > 0) {
+      for (let k = 0; k <= cnt; k++) {
+        const x = b.x + k * pw, g = ctx.createLinearGradient(0, yt, 0, yt + fh * .85);
+        g.addColorStop(0, A(C.grime, .6 * d)); g.addColorStop(1, A(C.grime, 0));
+        ctx.fillStyle = g; ctx.fillRect(x - 1.6, yt, 3.2, fh * .85);
+      }
+      ctx.fillStyle = A(C.grime, .16 * d); ctx.fillRect(b.x, yt, cnt * pw, fh);
+    }
+  }
+}
+function panelRoof(b, o) {
+  const ir = o.mode === 'thermal';
+  ctx.fillStyle = ir ? th(VT.panel.roof) : (o.retro && o.retro(FLOORS - 1) ? mix(C.retro, C.joint, .3) : C.joint);
+  ctx.fillRect(b.x - (o.retro && o.retro(FLOORS - 1) ? 2 : 0), b.top - 3, b.w + (o.retro && o.retro(FLOORS - 1) ? 4 : 0), 3);
+  ctx.fillStyle = ir ? th(.3) : C['concrete-2'];
+  ctx.fillRect(b.x + b.w * .58, b.top - 12, b.w * .17, 9);
+  ctx.fillRect(b.x + b.w * .2, b.top - 7, 3, 4);
+}
+
+function brickFloor(b, f, yb, yt, st, o) {
+  const fh = yb - yt, hf = st.h ?? 1;
+  if (hf <= 0) return;
+  const ir = o.mode === 'thermal', V = VT.brick, n = 5, bw = b.w / n;
+  ctx.save(); ctx.beginPath(); ctx.rect(b.x - 8, yb - fh * hf, b.w + 16, fh * hf + .5); ctx.clip();
+  ctx.fillStyle = ir ? th((f === 0 ? V.plinth : V.wall) + jit(f)) : f === 0 ? C.stone : (P.brick || C['brick-face']);
+  ctx.fillRect(b.x, yt, b.w, fh + .5);
+  if (!ir && f === 0) { ctx.fillStyle = A(C.joint, .28); for (let r = 1; r < 4; r++) ctx.fillRect(b.x, yt + fh * r / 4, b.w, 1); }
+  if (f === 1) { ctx.fillStyle = ir ? th(V.lintel) : C.stone; ctx.fillRect(b.x - 2, yb - 3, b.w + 4, 3); }
+  for (let k = 0; k < n; k++) {
+    const x = b.x + k * bw, s = f * 23 + k * 7 + 3;
+    const ww = bw * .46, wh = fh * .56, wx = x + (bw - ww) / 2, wy = yt + fh * .22;
+    if (f === 0 && k === 2) {
+      const dw = bw * .56, dx = x + (bw - dw) / 2, dy = yt + fh * .22, r = dw / 2;
+      ctx.fillStyle = ir ? th(V.door) : C.win;
+      ctx.beginPath(); ctx.moveTo(dx, yb); ctx.lineTo(dx, dy + r); ctx.arc(dx + r, dy + r, r, PI, 0); ctx.lineTo(dx + dw, yb); ctx.closePath(); ctx.fill();
+      if (ir && o.hot) o.hot.push({ x: dx + r, y: dy + r, v: V.door });
+      continue;
+    }
+    const arch = f === 1;
+    if (!arch) { ctx.fillStyle = ir ? th(V.lintel + jit(s)) : C.stone; ctx.fillRect(wx - bw * .05, wy - fh * .09, ww + bw * .1, fh * .07); }
+    win(wx, wy, ww, wh, s, o, arch);
+    ctx.fillStyle = ir ? th(V.lintel) : C.stone; ctx.fillRect(wx - bw * .04, wy + wh, ww + bw * .08, Math.max(1.5, fh * .035));
+  }
+  ctx.restore();
+}
+function brickRoof(b, o) {
+  const ir = o.mode === 'thermal';
+  ctx.fillStyle = ir ? th(VT.brick.cornice) : C.stone;
+  ctx.fillRect(b.x - 6, b.top - 7, b.w + 12, 7);
+  ctx.fillStyle = ir ? th(.3) : (P.brick || C['brick-face']); ctx.fillRect(b.x - 2, b.top - 13, b.w + 4, 6);
+  ctx.fillStyle = ir ? th(.42) : C.stone; ctx.fillRect(b.x - 3, b.top - 14.5, b.w + 6, 2);
+  ctx.fillStyle = ir ? th(.25) : A(C.joint, .45);
+  for (let x = b.x - 4; x < b.x + b.w + 4; x += 5) ctx.fillRect(x, b.top, 2.5, 2.5);
+}
+
+function glassFloor(b, f, yb, yt, st, o) {
+  const fh = yb - yt, fr = st.frame ?? 1, sk = fr >= 1 ? (st.skin ?? 1) : 0, ir = o.mode === 'thermal', V = VT.glass;
+  if (fr <= 0) return;
+  const nm = 12, mw = b.w / nm, cwN = 8;
+  const skinN = Math.floor(sk * nm + 1e-6);
+  const slabH = Math.max(2, fh * .13);
+  if (skinN < nm) {
+    const sx = b.x + skinN * mw, sw = b.w - skinN * mw;
+    if (fr >= 1) { ctx.fillStyle = A(C.ink, C.night ? .5 : .12); ctx.fillRect(sx, yt + slabH, sw, fh - slabH); }
+    ctx.fillStyle = ir ? th(.3) : C.concrete;
+    const ch = fh * Math.min(1, fr / .65);
+    for (const c of [.03, .35, .65, .97]) { const cx = b.x + b.w * c; if (cx + 2 < sx) continue; ctx.fillRect(cx - 2, yb - ch, 4, ch); }
+    if (fr >= .7) { const sp = seg(fr, .7, 1); ctx.fillRect(b.x, yt, b.w * sp, slabH); if (fr < 1) { ctx.fillStyle = C.steel; ctx.fillRect(b.x + b.w * sp, yt - 2, b.w * (1 - sp), 2); } }
+  }
+  for (let j = 0; j < skinN; j++) {
+    const x = b.x + j * mw, s = f * 31 + j;
+    if (j < cwN) {
+      const spH = f === 0 ? 0 : fh * .22;
+      const fresh = o.newSkin && o.newSkin(f, j);
+      ctx.fillStyle = ir ? th(V.vision + jit(s)) : fresh ? C['cw-glass-2'] : C['cw-glass'];
+      ctx.fillRect(x, yt, mw + .3, fh - spH);
+      if (!ir) {
+        if (C.night && rnd(s) < .4) { ctx.fillStyle = A(C['win-lit'], .7); ctx.fillRect(x + .5, yt + .5, mw - 1, fh - spH - 1); }
+        if (o.heat) { ctx.fillStyle = A('#FF6A1A', o.heat * 1.1); ctx.fillRect(x, yt, mw, fh - spH); }
+        const xc = b.x + ((gt * 16 + f * fh * .5) % (b.w * 2.4)) - b.w * .7, dd = Math.abs(x + mw / 2 - xc);
+        if (dd < mw * 1.6) { ctx.fillStyle = A('#FFFFFF', (C.night ? .06 : .26) * (1 - dd / (mw * 1.6))); ctx.fillRect(x, yt, mw, fh - spH); }
+        const dull = o.dull ? o.dull(f, j) : 0;
+        if (dull > 0) { ctx.fillStyle = A(C.grime, .3 * dull); ctx.fillRect(x, yt, mw, fh - spH); }
+      } else if (o.hot && j % 3 === 1) o.hot.push({ x: x + mw / 2, y: yt + fh * .4, v: V.vision });
+      if (spH) { ctx.fillStyle = ir ? th(V.spandrel + jit(s)) : C.spandrel; ctx.fillRect(x, yb - spH, mw + .3, spH); }
+    } else {
+      ctx.fillStyle = ir ? th(V.clad + jit(s)) : C.clad; ctx.fillRect(x, yt, mw + .3, fh + .3);
+    }
+  }
+  if (skinN >= 11 && f > 0) win(b.x + 9 * mw + mw * .25, yt + fh * .2, mw * 1.5, fh * .56, f * 7 + 2, o);
+  if (skinN > 0) {
+    const cwEnd = Math.min(skinN, cwN);
+    ctx.strokeStyle = ir ? th(V.frame) : C.mullion; ctx.lineWidth = ir ? 1.6 : 1;
+    ctx.beginPath();
+    for (let j = 0; j <= cwEnd; j++) { const x = b.x + j * mw; ctx.moveTo(x, yt); ctx.lineTo(x, yb); }
+    ctx.moveTo(b.x, yt); ctx.lineTo(b.x + cwEnd * mw, yt);
+    if (f > 0) { ctx.moveTo(b.x, yb - fh * .22); ctx.lineTo(b.x + cwEnd * mw, yb - fh * .22); }
+    ctx.stroke();
+    if (skinN > cwN) {
+      ctx.strokeStyle = ir ? th(.12) : A(C.ink, .22); ctx.lineWidth = .8; ctx.beginPath();
+      for (let j = cwN + 1; j < skinN; j++) { const x = b.x + j * mw; ctx.moveTo(x, yt); ctx.lineTo(x, yb); }
+      ctx.moveTo(b.x + cwN * mw, yt); ctx.lineTo(b.x + skinN * mw, yt); ctx.stroke();
+    }
+    if (f === 0 && skinN >= 6) {
+      ctx.fillStyle = ir ? th(V.door) : C.mullion; ctx.fillRect(b.x + 4 * mw - mw * .1, yt + fh * .28, mw * 2.2, Math.max(2, fh * .06));
+      if (ir && o.hot) o.hot.push({ x: b.x + 5 * mw, y: yt + fh * .6, v: V.door });
+    }
+  }
+}
+function glassRoof(b, o) {
+  const ir = o.mode === 'thermal';
+  ctx.fillStyle = ir ? th(VT.glass.roof) : C.spandrel; ctx.fillRect(b.x - 1, b.top - 4, b.w + 2, 4);
+  ctx.fillStyle = ir ? th(.2) : C['concrete-2'];
+  ctx.fillRect(b.x + b.w * .14, b.top - 11, b.w * .18, 7); ctx.fillRect(b.x + b.w * .4, b.top - 9, b.w * .12, 5);
+}
+const FLOOR_FN = [panelFloor, brickFloor, glassFloor], ROOF_FN = [panelRoof, brickRoof, glassRoof];
+
+function shear(yb, yt, db, dt) {
+  const k = (dt - db) / (yb - yt);
+  ctx.transform(1, 0, -k, 1, db + k * yb, 0);
+}
+function building(i, o = {}) {
+  const b = L.b[i];
+  o.V = VT[T[i].key];
+  for (let f = 0; f < FLOORS; f++) {
+    const st = o.prog ? o.prog(f) : FULL;
+    if (!st) continue;
+    const yb = L.ground - f * b.fh, yt = yb - b.fh;
+    ctx.save();
+    if (o.dx) shear(yb, yt, o.dx(f), o.dx(f + 1));
+    FLOOR_FN[i](b, f, yb, yt, st, o);
+    ctx.restore();
+  }
+  if ((o.roof ?? 1) > 0) { ctx.save(); if (o.dx) ctx.translate(o.dx(FLOORS), 0); ROOF_FN[i](b, o); ctx.restore(); }
+}
+
+/* ---------- HUD ---------- */
+const hudBig = document.getElementById('hudBig'), hudSmall = document.getElementById('hudSmall'), legend = document.getElementById('legend');
+let hudCache = '';
+function hud(big = '', small = '') {
+  const k = big + '|' + small;
+  if (k === hudCache) return;
+  hudCache = k; hudBig.textContent = big; hudSmall.textContent = small;
+}
+
+/* ================= SCENES ================= */
+
+/* 1 — meet */
+function sMeet(t) {
+  street('day');
+  for (let i = 0; i < 3; i++) building(i, {});
+  const yrs = ['1959–1990s', '1930s–1950s', '2000s–today'];
+  for (let i = 0; i < 3; i++) {
+    ctx.globalAlpha = ease(seg(t, .3 + i * .4, 1 + i * .4));
+    const b = L.b[i];
+    tag(b.cx, b.top - (i === 1 ? 20 : 16), yrs[i]);
+    ctx.globalAlpha = 1;
+  }
+  names(['2.8 m per storey', '3.6 m per storey', '3.2 m per storey']);
+  hud('9 storeys each', 'Same street, same number of floors');
+}
+
+/* 2 — build */
+const BUILD = {
+  max: 720,
+  panel: { found: 40, start: 45, pf: 5, roof: 8, finish: 245 },
+  brick: { found: 60, start: 62, pf: 34, roof: 30, finish: 690 },
+  glass: { found: 85, start: 88, pf: 8, skinStart: 125, skinPf: 7, finish: 455 },
+};
+const months = d => Math.round(d / 30.4);
+function crane(b, mx, topY, hookX, hookY, load) {
+  const mw = 5, jibL = mx - Math.min(hookX, b.x) + 8, jibR = clamp(L.margin - (mx - b.x - b.w) - 3, 6, 16);
+  ctx.strokeStyle = C.steel; ctx.lineWidth = 1.1; ctx.beginPath();
+  ctx.moveTo(mx - mw / 2, L.ground); ctx.lineTo(mx - mw / 2, topY); ctx.moveTo(mx + mw / 2, L.ground); ctx.lineTo(mx + mw / 2, topY);
+  for (let y = L.ground; y > topY + 6; y -= 6) { ctx.moveTo(mx - mw / 2, y); ctx.lineTo(mx + mw / 2, y - 6); }
+  ctx.moveTo(mx - jibL, topY); ctx.lineTo(mx + jibR, topY);
+  ctx.moveTo(mx - jibL, topY + 3); ctx.lineTo(mx, topY + 3);
+  ctx.moveTo(mx, topY - 10); ctx.lineTo(mx - jibL, topY); ctx.moveTo(mx, topY - 10); ctx.lineTo(mx + jibR, topY);
+  ctx.stroke();
+  ctx.fillStyle = C['steel-2']; ctx.fillRect(mx + jibR - 6, topY, 6, 6);
+  ctx.fillStyle = C.steel; ctx.fillRect(mx - mw / 2 - 1, topY + 3, mw + 2, 5);
+  ctx.strokeStyle = C['steel-2']; ctx.lineWidth = .8; seg2(hookX, topY + 3, hookX, hookY);
+  ctx.fillStyle = C['steel-2']; ctx.fillRect(hookX - 2.5, topY + 1, 5, 3);
+  if (load) load();
+}
+function foundation(b, p, label) {
+  if (p <= 0) return;
+  ctx.fillStyle = C.concrete; ctx.fillRect(b.x - 3, L.ground, (b.w + 6) * p, 7);
+  if (p < 1) {
+    ctx.strokeStyle = C['scene-ink-2']; ctx.setLineDash([3, 3]); ctx.lineWidth = 1;
+    ctx.strokeRect(b.x - 3, L.ground, b.w + 6, 7); ctx.setLineDash([]);
+    if (label) tag(b.cx, L.ground - 8, label);
+  }
+}
+function done(b, d, fin) {
+  if (d < fin) return;
+  ctx.globalAlpha = ease(seg(d, fin, fin + 25));
+  tag(b.cx, b.top - (b.i === 1 ? 20 : 16), `Handed over · month ${months(fin)}`, { border: C.good });
+  ctx.globalAlpha = 1;
+}
+function sBuild(t) {
+  const d = BUILD.max * seg(t, .2, 15);
+  street('day');
+  const subs = [];
+  /* panelka: factory panels, one floor every few days */
+  {
+    const S = BUILD.panel, b = L.b[0], fl = (d - S.start) / S.pf;
+    foundation(b, seg(d, 0, S.found), 'Foundations');
+    building(0, { prog: f => { const p = clamp(fl - f, 0, 1); return p > 0 ? { placed: p } : null; }, roof: fl >= FLOORS ? 1 : 0 });
+    const craneUp = d > 6 && d < S.start + FLOORS * S.pf + S.roof;
+    if (craneUp) {
+      const n = 6, pw = b.w / n, mx = b.x + b.w + Math.min(12, L.margin * .45), topY = b.top - 30;
+      let hookX = b.x + b.w * .4, hookY = topY + 30, load = null;
+      if (fl > 0 && fl < FLOORS) {
+        const fc = Math.floor(fl), q = (fl - fc) * n, k = Math.floor(q), p = q - k;
+        const yt = L.ground - (fc + 1) * b.fh, tx = b.x + k * pw + pw / 2;
+        const sx = Math.max(b.col.x + pw * .6, b.x - L.margin * .55), yc = Math.min(yt - b.fh * .9, L.ground - b.fh * 1.4);
+        const px = p < .35 ? sx : p < .7 ? lerp(sx, tx, ease(seg(p, .35, .7))) : tx;
+        const py = p < .35 ? lerp(L.ground - b.fh, yc, ease(seg(p, 0, .35))) : p < .7 ? yc : lerp(yc, yt, ease(seg(p, .7, 1)));
+        hookX = px; hookY = py;
+        load = () => {
+          ctx.fillStyle = mix(C.concrete, C['concrete-2'], .5); ctx.fillRect(px - pw / 2, py, pw, b.fh);
+          ctx.fillStyle = C.win; ctx.fillRect(px - pw * .23, py + b.fh * .2, pw * .46, b.fh * .5);
+          ctx.strokeStyle = C.joint; ctx.lineWidth = .8; ctx.strokeRect(px - pw / 2, py, pw, b.fh);
+        };
+        ctx.fillStyle = C['concrete-2'];
+        for (let s = 0; s < 3; s++) ctx.fillRect(sx - pw / 2, L.ground - 3 - s * 3, pw, 2.4);
+      }
+      crane(b, mx, topY, hookX, hookY, load);
+    }
+    subs.push(d < S.found ? 'Foundations' : fl < FLOORS ? `Panels · floor ${Math.min(FLOORS, Math.floor(fl) + 1)}/9` : d < S.finish ? 'Fit-out' : `Done in ${months(S.finish)} months`);
+    done(b, d, S.finish);
+  }
+  /* brick: course by course */
+  {
+    const S = BUILD.brick, b = L.b[1], fl = (d - S.start) / S.pf;
+    foundation(b, seg(d, 0, S.found), 'Foundations');
+    building(1, { prog: f => { const p = clamp(fl - f, 0, 1); return p > 0 ? { h: p } : null; }, roof: fl >= FLOORS ? 1 : 0 });
+    if (fl > 0 && d < S.start + FLOORS * S.pf + S.roof) {
+      const hTop = L.ground - Math.min(FLOORS, fl) * b.fh;
+      ctx.strokeStyle = A(C['steel-2'], .55); ctx.lineWidth = .8; ctx.beginPath();
+      const pole = [b.x - 5, b.x + b.w * .25, b.x + b.w * .5, b.x + b.w * .75, b.x + b.w + 5];
+      for (const x of pole) { ctx.moveTo(x, L.ground); ctx.lineTo(x, hTop - 8); }
+      for (let y = L.ground - b.fh / 2; y > hTop - 8; y -= b.fh / 2) { ctx.moveTo(b.x - 7, y); ctx.lineTo(b.x + b.w + 7, y); }
+      ctx.stroke();
+      ctx.fillStyle = C.steel; ctx.fillRect(b.x - 7, hTop - 2, b.w + 14, 2);
+      for (let wk = 0; wk < 3; wk++) {
+        const wx = b.x + b.w * (.15 + .32 * wk) + Math.sin(gt * 1.4 + wk * 2) * b.w * .08;
+        ctx.fillStyle = C['scene-ink']; ctx.fillRect(wx - 1, hTop - 9, 2.4, 6);
+        ctx.beginPath(); ctx.arc(wx + .2, hTop - 10.5, 1.8, 0, 7); ctx.fill();
+        ctx.fillStyle = C.steel; ctx.fillRect(wx - 1.6, hTop - 12.8, 3.6, 1.4);
+      }
+      const hx = b.x + b.w + Math.min(14, L.margin * .55);
+      ctx.strokeStyle = C.steel; ctx.lineWidth = 1; seg2(hx, L.ground, hx, hTop - 14);
+      const py = lerp(L.ground - 4, hTop - 4, (Math.sin(gt * 1.1) + 1) / 2);
+      ctx.fillStyle = C['brick-face']; ctx.fillRect(hx - 4, py - 4, 8, 4);
+      ctx.fillStyle = C['brick-face'];
+      ctx.fillRect(b.x - L.margin * .7, L.ground - 6, Math.min(16, L.margin * .5), 6);
+    }
+    subs.push(d < S.found ? 'Foundations' : fl < FLOORS ? `Brickwork · floor ${Math.min(FLOORS, Math.floor(fl) + 1)}/9` : d < S.finish ? 'Roof + fit-out' : `Done in ${months(S.finish)} months`);
+    done(b, d, S.finish);
+  }
+  /* glass: poured frame, then skin follows a few floors behind */
+  {
+    const S = BUILD.glass, b = L.b[2], fl = (d - S.start) / S.pf, sl = (d - S.skinStart) / S.skinPf;
+    foundation(b, seg(d, 0, S.found), 'Piles + basement');
+    building(2, {
+      prog: f => { const fr = clamp(fl - f, 0, 1); if (fr <= 0) return null; return { frame: fr, skin: fr >= 1 ? clamp(sl - f, 0, 1) : 0 }; },
+      roof: fl >= FLOORS ? 1 : 0,
+    });
+    if (d > 8 && sl < FLOORS) {
+      const mx = b.x + b.w + Math.min(12, L.margin * .45), topY = b.top - 30;
+      const workY = fl < FLOORS ? L.ground - Math.max(1, Math.floor(fl) + 1) * b.fh : L.ground - Math.max(1, Math.floor(sl) + 1) * b.fh;
+      const hookY = lerp(L.ground - 10, workY - 6, (Math.sin(gt * .9) + 1) / 2);
+      const hookX = b.x + b.w * (fl < FLOORS ? .5 : .2);
+      crane(b, mx, topY, hookX, hookY, () => {
+        if (fl >= FLOORS) { ctx.fillStyle = C['cw-glass']; ctx.fillRect(hookX - b.w / 24, hookY, b.w / 12, b.fh * .9); ctx.strokeStyle = C.mullion; ctx.strokeRect(hookX - b.w / 24, hookY, b.w / 12, b.fh * .9); }
+        else { ctx.fillStyle = C.steel; ctx.fillRect(hookX - 5, hookY, 10, 3); }
+      });
+    }
+    subs.push(d < S.found ? 'Piles + basement' : fl < FLOORS ? `Frame · floor ${Math.min(FLOORS, Math.floor(fl) + 1)}/9` : sl < FLOORS ? `Facade · floor ${Math.floor(sl) + 1}/9` : d < S.finish ? 'Fit-out' : `Done in ${months(S.finish)} months`);
+    done(b, d, S.finish);
+  }
+  names(subs);
+  bar(0, d / BUILD.panel.finish, L.ground + 52); bar(1, d / BUILD.brick.finish, L.ground + 52); bar(2, d / BUILD.glass.finish, L.ground + 52);
+  hud(`Day ${Math.floor(d)}`, `Month ${Math.floor(d / 30.4) + 1} of construction`);
+}
+
+/* 3 — structure */
+function keyPlan(i, a) {
+  const b = L.b[i], w = Math.min(84, L.colW * .62), h = w * .42, x = b.cx - w / 2, y = 22;
+  ctx.globalAlpha = a;
+  ctx.font = `500 ${L.small ? 8 : 9}px ${F.mono}`; ctx.fillStyle = C['scene-ink-2']; ctx.textAlign = 'center';
+  ctx.fillText('KEY PLAN', b.cx, y - 5);
+  ctx.strokeStyle = C['scene-ink']; ctx.fillStyle = C['scene-ink'];
+  if (i === 0) {
+    ctx.lineWidth = 1; ctx.strokeRect(x, y, w, h);
+    ctx.lineWidth = 2.4; ctx.beginPath(); for (let k = 0; k <= 6; k++) { ctx.moveTo(x + k * w / 6, y); ctx.lineTo(x + k * w / 6, y + h); } ctx.stroke();
+  } else if (i === 1) {
+    ctx.lineWidth = 3.2; ctx.strokeRect(x, y, w, h);
+    ctx.lineWidth = 2.6; seg2(x, y + h * .58, x + w, y + h * .58);
+    ctx.lineWidth = .8; ctx.setLineDash([2, 2]); seg2(x + w * .33, y, x + w * .33, y + h * .58); seg2(x + w * .66, y, x + w * .66, y + h * .58); ctx.setLineDash([]);
+  } else {
+    ctx.lineWidth = 1; ctx.setLineDash([3, 2]); ctx.strokeRect(x, y, w, h); ctx.setLineDash([]);
+    for (const cx of [.08, .36, .64, .92]) for (const cy of [.12, .88]) { ctx.fillRect(x + w * cx - 2, y + h * cy - 2, 4, 4); }
+    ctx.fillRect(x + w * .43, y + h * .28, w * .14, h * .44);
+  }
+  ctx.globalAlpha = 1;
+}
+function flowLine(pts, t, col, lw = 1.6) {
+  ctx.strokeStyle = col; ctx.lineWidth = lw; ctx.setLineDash([4, 5]); ctx.lineDashOffset = -t * 26;
+  ctx.beginPath(); ctx.moveTo(pts[0][0], pts[0][1]); for (let k = 1; k < pts.length; k++) ctx.lineTo(pts[k][0], pts[k][1]); ctx.stroke();
+  ctx.setLineDash([]); ctx.lineDashOffset = 0;
+}
+function sBones(t) {
+  street('day');
+  ctx.globalAlpha = 1 - .8 * ease(seg(t, .3, 1.8));
+  for (let i = 0; i < 3; i++) building(i, {});
+  ctx.globalAlpha = 1;
+  const s = ease(seg(t, 1.2, 2.8)), sig = C.signal, ink = C['scene-ink'];
+  /* panelka: cross walls every bay, slabs between, joints at every crossing */
+  {
+    const b = L.b[0], n = 6, pw = b.w / n, top = L.ground - b.h * s;
+    ctx.fillStyle = A(ink, .85);
+    for (let k = 0; k <= n; k++) ctx.fillRect(b.x + k * pw - 1.6, top, 3.2, L.ground - top);
+    for (let f = 1; f <= FLOORS; f++) { const y = L.ground - f * b.fh; if (y >= top) ctx.fillRect(b.x, y - 1.2, b.w, 2.4); }
+    if (s >= 1) {
+      for (let k = 0; k <= n; k++) flowLine([[b.x + k * pw, b.top], [b.x + k * pw, L.ground]], t, sig);
+      for (let k = 0; k <= n; k++) for (let f = 1; f <= FLOORS; f++) {
+        const r = 2 + .9 * Math.sin(t * 4 + k * .7 + f);
+        ctx.fillStyle = sig; ctx.beginPath(); ctx.arc(b.x + k * pw, L.ground - f * b.fh, r, 0, 7); ctx.fill();
+      }
+      ctx.globalAlpha = seg(t, 3, 3.6);
+      tag(b.cx, b.top - 12, 'Wall panels carry the floors');
+      ctx.globalAlpha = seg(t, 4.2, 4.8);
+      tag(b.x + 2 * pw, L.ground - 4.5 * b.fh, 'Welded + grouted joints', { border: sig });
+      ctx.globalAlpha = 1;
+    }
+  }
+  /* brick: piers between windows, arches over openings, walls thicken downward */
+  {
+    const b = L.b[1], n = 5, bw = b.w / n, ww = bw * .46;
+    if (s > 0) {
+      ctx.globalAlpha = s;
+      for (let k = 0; k <= n; k++) {
+        const x = b.x + clamp(k * bw, 2, b.w - 2);
+        ctx.fillStyle = A(ink, .6); ctx.fillRect(x - (bw - ww) / 2 + (k === 0 ? (bw - ww) / 2 - 2 : 0), b.top, k === 0 || k === n ? 4 : bw - ww, b.h);
+      }
+      ctx.globalAlpha = 1;
+    }
+    if (s >= 1) {
+      for (let k = 0; k <= n; k++) { const x = b.x + clamp(k * bw, 2, b.w - 2); flowLine([[x, b.top], [x, L.ground]], t, sig); }
+      ctx.strokeStyle = sig; ctx.lineWidth = 1.4; ctx.setLineDash([3, 4]); ctx.lineDashOffset = -t * 20;
+      for (let f = 1; f < FLOORS; f++) for (let k = 0; k < n; k++) {
+        const wx = b.x + k * bw + (bw - ww) / 2, wy = L.ground - (f + 1) * b.fh + b.fh * .14;
+        ctx.beginPath(); ctx.moveTo(wx + ww / 2, wy - 2); ctx.quadraticCurveTo(wx - 1, wy - 2, b.x + k * bw + 1, wy + b.fh * .2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(wx + ww / 2, wy - 2); ctx.quadraticCurveTo(wx + ww + 1, wy - 2, b.x + (k + 1) * bw - 1, wy + b.fh * .2); ctx.stroke();
+      }
+      ctx.setLineDash([]); ctx.lineDashOffset = 0;
+      /* wall section strip: thicker near the ground */
+      const sx = b.x - Math.min(16, L.margin * .7), k1 = L.small ? .09 : .14;
+      const w64 = 64 * k1, w51 = 51 * k1, yMid = L.ground - 4 * b.fh;
+      ctx.fillStyle = P.brick || C['brick-face'];
+      ctx.fillRect(sx - w64, yMid, w64, L.ground - yMid); ctx.fillRect(sx - w51, b.top, w51, yMid - b.top);
+      ctx.strokeStyle = ink; ctx.lineWidth = 1; ctx.strokeRect(sx - w64, yMid, w64, L.ground - yMid); ctx.strokeRect(sx - w51, b.top, w51, yMid - b.top);
+      ctx.globalAlpha = seg(t, 3, 3.6);
+      tag(sx - w64 - 2, L.ground - 1.6 * b.fh, '64 cm', { align: 'right' });
+      tag(sx - w51 - 2, L.ground - 6.5 * b.fh, '51 cm', { align: 'right' });
+      tag(b.cx, b.top - 22, 'Thick walls carry everything');
+      ctx.globalAlpha = 1;
+    }
+  }
+  /* glass: columns + slabs + core; the facade hangs off slab edges */
+  {
+    const b = L.b[2], top = L.ground - b.h * s, cols = [.04, .3, .7, .96];
+    ctx.fillStyle = A(ink, .85);
+    for (const c of cols) ctx.fillRect(b.x + b.w * c - 2.2, top, 4.4, L.ground - top);
+    ctx.fillStyle = A(ink, .45); ctx.fillRect(b.x + b.w * .42, top, b.w * .16, L.ground - top);
+    ctx.fillStyle = A(ink, .85);
+    for (let f = 1; f <= FLOORS; f++) { const y = L.ground - f * b.fh; if (y >= top) ctx.fillRect(b.x - 2, y - 1.6, b.w + 4, 3.2); }
+    if (s >= 1) {
+      for (const c of cols) flowLine([[b.x + b.w * c, b.top], [b.x + b.w * c, L.ground]], t, sig);
+      for (let f = 1; f <= FLOORS; f++) {
+        const y = L.ground - f * b.fh;
+        for (const ex of [b.x - 2, b.x + b.w + 2]) {
+          ctx.fillStyle = sig; ctx.fillRect(ex - 2, y - 1, 4, 3);
+          ctx.strokeStyle = A(sig, .7); ctx.lineWidth = 1; seg2(ex, y + 2, ex, y + b.fh * .7);
+        }
+      }
+      ctx.globalAlpha = seg(t, 3, 3.6);
+      tag(b.cx, b.top - 16, 'Columns, slabs + core');
+      ctx.globalAlpha = seg(t, 4.2, 4.8);
+      tag(b.x + b.w, L.ground - 5.5 * b.fh, 'Facade hangs from slab edges', { align: 'right', border: sig });
+      ctx.globalAlpha = 1;
+    }
+  }
+  for (let i = 0; i < 3; i++) keyPlan(i, seg(t, 2, 3));
+  names(['cross-wall system', 'bearing-wall system', 'frame + core system']);
+  hud('', '');
+}
+
+/* 4 — winter (thermal camera) */
+function wisps(hot, i) {
+  if (!hot.length) return;
+  for (let n = 0; n < 30; n++) {
+    const p = (gt * .32 + rnd(n * 7.3 + i * 11)) % 1;
+    const sp = hot[Math.floor(rnd(n * 3.7 + i * 5) * hot.length)];
+    const x = sp.x + Math.sin(p * 6 + n) * 4, y = sp.y - p * 34, r = 1.5 + p * 5;
+    ctx.fillStyle = th(sp.v); ctx.globalAlpha = (1 - p) * .32 * sp.v;
+    ctx.beginPath(); ctx.arc(x, y, r, 0, 7); ctx.fill();
+  }
+  ctx.globalAlpha = 1;
+}
+function sWinter(t) {
+  const sx = W * ease(seg(t, .15, 1.8));
+  if (sx < W) {
+    ctx.save(); ctx.beginPath(); ctx.rect(sx, 0, W - sx, H); ctx.clip();
+    street('day'); for (let i = 0; i < 3; i++) building(i, {}); names();
+    ctx.restore();
+  }
+  ctx.save(); ctx.beginPath(); ctx.rect(0, 0, sx, H); ctx.clip();
+  street('thermal');
+  for (let i = 0; i < 3; i++) { const hot = []; building(i, { mode: 'thermal', hot }); wisps(hot, i); }
+  names(['wall U ≈ 1.2 W/m²K', 'wall U ≈ 1.1 W/m²K', 'wall U ≈ 0.25 W/m²K'], true);
+  if (t > 2.6) {
+    ctx.globalAlpha = seg(t, 2.6, 3.2); tag(L.b[0].cx, L.b[0].top - 10, 'Joints + balcony slabs glow', IRTAG);
+    ctx.globalAlpha = seg(t, 3.4, 4); tag(L.b[1].cx, L.b[1].top - 20, 'Windows leak most', IRTAG);
+    ctx.globalAlpha = seg(t, 4.2, 4.8); tag(L.b[2].cx, L.b[2].top - 16, 'Panels dark, glass glows', IRTAG);
+    ctx.globalAlpha = 1;
+  }
+  ctx.restore();
+  if (sx > 0 && sx < W) { ctx.fillStyle = A('#fde45b', .85); ctx.fillRect(sx - 1, 0, 2, H); }
+  hud('−20 °C outside', '+21 °C inside · thermal camera');
+}
+
+/* 5 — summer */
+const OUT = [[6, 19], [9, 24], [12, 29], [15, 31], [18, 28], [21, 23]];
+const INDOOR = [
+  [[6, 23], [9, 23.6], [12, 25], [15, 26.6], [18, 27.8], [21, 27.5]],
+  [[6, 22.5], [9, 22.5], [12, 23], [15, 23.8], [18, 24.6], [21, 25]],
+  [[6, 23.5], [9, 26], [12, 29.5], [15, 31.5], [18, 30.5], [21, 28]],
+];
+function thermo(x, y, h, v, col) {
+  const f = seg(v, 18, 34);
+  ctx.fillStyle = C.sheet; rr(x - 3.5, y - h, 7, h, 3.5); ctx.fill();
+  ctx.strokeStyle = C['scene-ink-2']; ctx.lineWidth = 1; ctx.stroke();
+  ctx.fillStyle = col; ctx.fillRect(x - 1.5, y - (h - 4) * f - 2, 3, (h - 4) * f);
+  ctx.beginPath(); ctx.arc(x, y + 2, 5, 0, 7); ctx.fill(); ctx.strokeStyle = C['scene-ink-2']; ctx.stroke();
+}
+function sSummer(t) {
+  const hr = 6 + 15 * seg(t, .3, 11.8), sunUp = Math.sin(PI * (hr - 6) / 15);
+  street('hot', { warm: .25 + .5 * sunUp });
+  const sx = lerp(W * .04, W * .96, (hr - 6) / 15), sy = L.top * .45 + (1 - sunUp) * (L.ground * .5);
+  const glow = ctx.createRadialGradient(sx, sy, 2, sx, sy, 46);
+  glow.addColorStop(0, A('#FFE9A8', .85)); glow.addColorStop(1, A('#FFE9A8', 0));
+  ctx.fillStyle = glow; ctx.beginPath(); ctx.arc(sx, sy, 46, 0, 7); ctx.fill();
+  ctx.fillStyle = '#FFC93C'; ctx.beginPath(); ctx.arc(sx, sy, 11, 0, 7); ctx.fill();
+  const tins = INDOOR.map(k => curve(k, hr));
+  for (let i = 0; i < 3; i++) building(i, { heat: clamp((tins[i] - 23) / 9, 0, 1) * .5 });
+  /* rays into the glass */
+  const g = L.b[2];
+  ctx.strokeStyle = A('#FFC93C', .3 * sunUp); ctx.lineWidth = 1.2; ctx.setLineDash([6, 6]); ctx.lineDashOffset = -gt * 30;
+  for (let k = 0; k < 6; k++) { const ty = g.top + g.h * (.12 + k * .14); seg2(sx, sy, g.x + g.w * .3, ty); }
+  ctx.setLineDash([]); ctx.lineDashOffset = 0;
+  for (let i = 0; i < 3; i++) {
+    const b = L.b[i];
+    thermo(b.x + b.w + Math.min(14, L.margin * .55), L.ground - 18, Math.min(70, b.h * .32), tins[i], tins[i] > 28 ? C.poor : tins[i] > 25.5 ? C.mid : C.good);
+  }
+  if (tins[2] > 27) {
+    const g2 = L.b[2]; ctx.strokeStyle = A('#FF8A3D', .5); ctx.lineWidth = 1;
+    for (let k = 0; k < 3; k++) {
+      const x0 = g2.x + g2.w * (.18 + k * .1); ctx.beginPath();
+      for (let y = 0; y < 18; y += 2) ctx.lineTo(x0 + Math.sin(gt * 6 + y * .6 + k) * 2, g2.top - 12 - y);
+      ctx.stroke();
+    }
+  }
+  names(tins.map(v => `indoors ${v.toFixed(1)} °C`));
+  const hh = Math.floor(hr), mm = Math.floor((hr - hh) * 60 / 15) * 15;
+  hud(`${String(hh).padStart(2, '0')}:${String(mm).padStart(2, '0')}`, `${curve(OUT, hr).toFixed(0)} °C outside · no AC, no blinds`);
+}
+
+/* 6 — sound */
+const SND = [
+  { wall: 14, slab: 14, ext: 32, Rw: 47, Ln: 70, mat: 'concrete' },
+  { wall: 38, slab: 30, ext: 64, Rw: 57, Ln: 64, mat: 'brick' },
+  { wall: 20, slab: 22, ext: 30, Rw: 54, Ln: 54, mat: 'concrete', screed: true },
+];
+function sSound(t) {
+  drafting();
+  const reveal = ease(seg(t, 0, .8));
+  for (let i = 0; i < 3; i++) {
+    const c = L.b[i].col, D = SND[i];
+    const bx = c.x + c.w * .07, bw = c.w * .86, by = 34, bh = L.ground - by - 8;
+    const k = bw / 520, e = Math.max(3, D.ext * k * .7), wv = Math.max(2, D.wall * k), sl = Math.max(2, D.slab * k);
+    const midX = bx + bw / 2, midY = by + bh / 2;
+    ctx.globalAlpha = reveal;
+    ctx.fillStyle = D.mat === 'brick' ? (P.brick || C['brick-face']) : C.concrete; ctx.fillRect(bx, by, bw, bh);
+    if (D.mat !== 'brick') {
+      ctx.fillStyle = A(C.joint, .5);
+      for (let n = 0; n < 160; n++) { const px = bx + rnd(n + i * 200) * bw, py = by + rnd(n * 3 + i * 91) * bh; ctx.fillRect(px, py, 1, 1); }
+    }
+    const R = {
+      TL: { x: bx + e, y: by + sl, w: midX - wv / 2 - (bx + e), h: midY - sl / 2 - (by + sl) },
+      TR: { x: midX + wv / 2, y: by + sl, w: bx + bw - e - (midX + wv / 2), h: midY - sl / 2 - (by + sl) },
+      BL: { x: bx + e, y: midY + sl / 2, w: midX - wv / 2 - (bx + e), h: by + bh - sl - (midY + sl / 2) },
+      BR: { x: midX + wv / 2, y: midY + sl / 2, w: bx + bw - e - (midX + wv / 2), h: by + bh - sl - (midY + sl / 2) },
+    };
+    ctx.fillStyle = C.room;
+    for (const r of Object.values(R)) ctx.fillRect(r.x, r.y, r.w, r.h);
+    if (D.screed) {
+      ctx.fillStyle = C['concrete-2']; ctx.fillRect(R.TL.x, R.TL.y + R.TL.h - 4, R.TL.w, 4); ctx.fillRect(R.TR.x, R.TR.y + R.TR.h - 4, R.TR.w, 4);
+      ctx.fillStyle = C.signal; ctx.fillRect(R.TL.x, R.TL.y + R.TL.h - 1, R.TL.w, 1); ctx.fillRect(R.TR.x, R.TR.y + R.TR.h - 1, R.TR.w, 1);
+    }
+    ctx.strokeStyle = C['scene-ink']; ctx.lineWidth = 1; ctx.strokeRect(bx, by, bw, bh);
+    ctx.globalAlpha = 1;
+    if (t < .8) continue;
+    /* airborne: speaker in TL → party wall → TR */
+    const spx = R.TL.x + R.TL.w * .28, spy = R.TL.y + R.TL.h * .55;
+    ctx.fillStyle = C['scene-ink']; ctx.fillRect(spx - 5, spy - 8, 9, 16);
+    ctx.fillStyle = C.room; ctx.beginPath(); ctx.arc(spx - .5, spy + 2, 3, 0, 7); ctx.fill(); ctx.beginPath(); ctx.arc(spx - .5, spy - 4.5, 1.6, 0, 7); ctx.fill();
+    const recv = 80 - D.Rw, trans = clamp((recv - 14) / 30, .08, 1);
+    for (let n = 0; n < 5; n++) {
+      const ph = (gt * .55 + n / 5) % 1, rad = 8 + ph * (R.TL.w * 1.9 + wv);
+      for (const [room, alpha, lw] of [[R.TL, 1, 2], [R.TR, trans, 1 + trans]]) {
+        ctx.save(); ctx.beginPath(); ctx.rect(room.x, room.y, room.w, room.h); ctx.clip();
+        ctx.strokeStyle = A(C.signal, (1 - ph) * .9 * alpha); ctx.lineWidth = lw;
+        ctx.beginPath(); ctx.arc(spx + 4, spy, rad, -.85, .85); ctx.stroke(); ctx.restore();
+      }
+    }
+    const fsz = L.small ? 12 : 17;
+    const recvNow = recv + Math.sin(gt * 7 + i) * 1.2;
+    ctx.textAlign = 'center'; ctx.fillStyle = C['scene-ink'];
+    ctx.font = `700 ${fsz}px ${F.display}`; ctx.fillText(`${Math.round(recvNow)} dB`, R.TR.x + R.TR.w / 2, R.TR.y + R.TR.h * .5);
+    ctx.font = fitFont(recv > 30 ? 'voices clear' : recv > 25 ? 'muffled' : 'faint', 400, L.small ? 8.5 : 10.5, F.mono, R.TR.w - 6);
+    ctx.fillStyle = C['scene-ink-2']; ctx.fillText(recv > 30 ? 'voices clear' : recv > 25 ? 'muffled' : 'faint', R.TR.x + R.TR.w / 2, R.TR.y + R.TR.h * .5 + fsz * .95);
+    ctx.font = `500 ${L.small ? 8 : 9.5}px ${F.mono}`; ctx.fillText('80 dB', spx, spy - 12);
+    /* impact: footsteps in TL → slab → BL */
+    const stepT = gt * 1.6, step = Math.floor(stepT), sp2 = stepT - step;
+    const fx = R.TL.x + R.TL.w * (.55 + (step % 3) * .13), fy = R.TL.y + R.TL.h - (D.screed ? 6 : 3);
+    ctx.fillStyle = A(C['scene-ink'], 1 - sp2 * .7); ctx.beginPath(); ctx.ellipse(fx, fy - 1.5, 4, 1.6, 0, 0, 7); ctx.fill();
+    const it = clamp((D.Ln - 45) / 28, .08, 1);
+    ctx.save(); ctx.beginPath(); ctx.rect(R.BL.x, R.BL.y, R.BL.w, R.BL.h); ctx.clip();
+    for (let n = 0; n < 3; n++) {
+      const ph = (sp2 + n / 3) % 1;
+      ctx.strokeStyle = A(C.poor, (1 - ph) * it); ctx.lineWidth = 1 + it;
+      ctx.beginPath(); ctx.arc(fx, R.BL.y, 4 + ph * R.BL.h * .95, .15, PI - .15); ctx.stroke();
+    }
+    ctx.restore();
+    ctx.fillStyle = C['scene-ink']; ctx.font = `700 ${fsz}px ${F.display}`;
+    ctx.fillText(`${D.Ln} dB`, R.BL.x + R.BL.w / 2, R.BL.y + R.BL.h * .62);
+    ctx.font = fitFont('footsteps', 400, L.small ? 8.5 : 10.5, F.mono, R.BL.w - 6); ctx.fillStyle = C['scene-ink-2'];
+    ctx.fillText('footsteps', R.BL.x + R.BL.w / 2, R.BL.y + R.BL.h * .62 + fsz * .95);
+    ctx.globalAlpha = seg(t, 1.5, 2.2);
+    ctx.font = fitFont(`${D.wall} cm wall`, 500, L.small ? 8 : 9.5, F.mono, R.BR.w - 4);
+    ctx.fillStyle = C['scene-ink-2']; ctx.fillText(`${D.wall} cm wall`, R.BR.x + R.BR.w / 2, R.BR.y + R.BR.h * .45);
+    ctx.fillText(`${D.slab} cm floor`, R.BR.x + R.BR.w / 2, R.BR.y + R.BR.h * .45 + (L.small ? 11 : 14));
+    ctx.globalAlpha = 1;
+  }
+  names(['wall Rw ≈ 47 dB', 'wall Rw ≈ 57 dB', 'wall Rw ≈ 54 dB']);
+  hud('', '');
+}
+
+/* 7 — space */
+const PLANS = [
+  { w: 8.4, d: 5.4, ceil: 2.5,
+    rooms: [['Hall', 3.2, 3.0, 8.4, 5.4, 10, 4.7, 4.5], ['Living', 0, 0, 3.2, 5.4, 17], ['Bedroom', 3.2, 0, 6.2, 3.0, 9], ['Kitchen', 6.2, 0, 8.4, 2.7, 6], ['Bath', 6.2, 2.7, 8.4, 4.0, 3]],
+    walls: [[0, 0, 8.4, 0, 'lb'], [0, 5.4, 8.4, 5.4, 'lb'], [0, 0, 0, 5.4, 'lb'], [8.4, 0, 8.4, 5.4, 'lb'], [3.2, 0, 3.2, 5.4, 'lb', 'try'], [6.2, 0, 6.2, 4.0, 'lb'], [3.2, 3.0, 6.2, 3.0, 'pt'], [6.2, 2.7, 8.4, 2.7, 'pt'], [6.2, 4.0, 8.4, 4.0, 'pt']],
+    windows: [[.7, 2.5], [4.0, 5.4], [6.8, 7.8]] },
+  { w: 9.6, d: 6.4, ceil: 3.2,
+    rooms: [['Hall', 0, 4.8, 7.2, 6.4, 11], ['Living', 0, 0, 4.2, 4.8, 20], ['Bedroom', 4.2, 0, 7.2, 4.8, 14], ['Kitchen', 7.2, 0, 9.6, 4.8, 11], ['Bath', 7.2, 4.8, 9.6, 6.4, 4]],
+    walls: [[0, 0, 9.6, 0, 'lb'], [0, 6.4, 9.6, 6.4, 'lb'], [0, 0, 0, 6.4, 'lb'], [9.6, 0, 9.6, 6.4, 'lb'], [0, 4.8, 9.6, 4.8, 'lb', 'spine'], [4.2, 0, 4.2, 4.8, 'pt', 'remove'], [7.2, 0, 7.2, 4.8, 'pt'], [7.2, 4.8, 7.2, 6.4, 'pt']],
+    windows: [[1.0, 3.2], [5.0, 6.4], [7.8, 9.0]] },
+  { w: 9.0, d: 5.8, ceil: 2.8,
+    rooms: [['Hall', 5.0, 3.4, 6.8, 5.8, 4], ['Hall', 0, 4.6, 5.0, 5.8, 6], ['Kitchen-living', 0, 0, 5.0, 4.6, 23], ['Bedroom', 5.0, 0, 9.0, 3.4, 14], ['Bath', 6.8, 3.4, 9.0, 5.2, 4]],
+    walls: [[0, 5.8, 9.0, 5.8, 'pt'], [0, 0, 0, 5.8, 'pt'], [9.0, 0, 9.0, 5.8, 'pt'], [5.0, 0, 5.0, 3.4, 'pt', 'slide'], [5.0, 3.4, 9.0, 3.4, 'pt'], [6.8, 3.4, 6.8, 5.2, 'pt'], [6.8, 5.2, 9.0, 5.2, 'pt'], [0, 4.6, 5.0, 4.6, 'pt']],
+    windows: [[.3, 8.7]], cols: [[0, 0], [4.5, 0], [9, 0], [0, 5.8], [4.5, 5.8], [9, 5.8]] },
+];
+function hammer(x, y, a) {
+  ctx.save(); ctx.translate(x, y); ctx.rotate(-.9 + a);
+  ctx.fillStyle = C['steel-2']; ctx.fillRect(-1.2, 0, 2.4, 16);
+  ctx.fillStyle = C['scene-ink']; ctx.fillRect(-5, -3, 10, 5);
+  ctx.restore();
+}
+function person(x, y, hpx) {
+  const hr = hpx * .075;
+  ctx.fillStyle = C['scene-ink'];
+  ctx.beginPath(); ctx.arc(x, y - hpx + hr, hr, 0, 7); ctx.fill();
+  rr(x - hpx * .09, y - hpx + hr * 2.2, hpx * .18, hpx * .46, hpx * .05); ctx.fill();
+  ctx.fillRect(x - hpx * .07, y - hpx * .45, hpx * .055, hpx * .45); ctx.fillRect(x + hpx * .015, y - hpx * .45, hpx * .055, hpx * .45);
+}
+function sSpace(t) {
+  drafting();
+  const secH = clamp((L.ground - 20) * .32, 74, 132), planTop = 36, planBot = L.ground - secH - 26;
+  const boxW = L.colW * .86, boxH = planBot - planTop;
+  const sc = Math.min(...PLANS.map(p => Math.min(boxW / p.w, boxH / p.d)));
+  for (let i = 0; i < 3; i++) {
+    const p = PLANS[i], b = L.b[i], ox = b.cx - p.w * sc / 2, oy = planTop + (boxH - p.d * sc) / 2;
+    const X = v => ox + v * sc, Y = v => oy + v * sc;
+    let slideX = 5.0;
+    if (i === 2) slideX = t < 2 ? 5 : t < 4 ? lerp(5, 3.6, ease(seg(t, 2, 4))) : t < 5.5 ? 3.6 : t < 7.5 ? lerp(3.6, 6.4, ease(seg(t, 5.5, 7.5))) : t < 9 ? 6.4 : lerp(6.4, 5, ease(seg(t, 9, 10.5)));
+    const removeA = i === 1 ? 1 - ease(seg(t, 2.2, 3.6)) : 1;
+    ctx.fillStyle = C.room; ctx.fillRect(X(0), Y(0), p.w * sc, p.d * sc);
+    const roomGeo = p.rooms.map(r => {
+      let [nm, x1, y1, x2, y2, area, lx, ly] = r;
+      if (i === 2 && nm === 'Kitchen-living') { x2 = slideX; area = Math.round(slideX * 4.6); }
+      if (i === 2 && nm === 'Bedroom') { x1 = slideX; area = Math.round((9 - slideX) * 3.4); }
+      return { nm, x1, y1, x2, y2, area, lx: lx ?? (x1 + x2) / 2, ly: ly ?? (y1 + y2) / 2 };
+    });
+    for (const r of roomGeo) {
+      ctx.fillStyle = r.nm === 'Hall' ? A(C.rule, .35) : r.nm === 'Bath' || r.nm === 'Kitchen' ? A(C.glass, .1) : A(C[T[i].key], .12);
+      ctx.fillRect(X(r.x1), Y(r.y1), (r.x2 - r.x1) * sc, (r.y2 - r.y1) * sc);
+    }
+    for (const r of roomGeo) {
+      const merged = i === 1 && removeA < .5;
+      if (merged && r.nm === 'Bedroom') continue;
+      if (i === 2 && r.nm === 'Hall' && (r.y2 - r.y1) < 1.5) continue;
+      let label = r.nm, ar = r.area, lx = r.lx, span = r.x2 - r.x1;
+      if (merged && r.nm === 'Living') { ar = 34; lx = 3.6; span = 7; }
+      ctx.textAlign = 'center';
+      ctx.font = fitFont(label, 600, L.small ? 8.5 : 11, F.body, Math.max(20, span * sc - 4));
+      ctx.fillStyle = C['scene-ink']; ctx.fillText(label, X(lx), Y(r.ly) - 1);
+      ctx.font = `400 ${L.small ? 8 : 10}px ${F.mono}`; ctx.fillStyle = C['scene-ink-2'];
+      if (span * sc > 18) ctx.fillText(`${ar} m²`, X(lx), Y(r.ly) + (L.small ? 9 : 12));
+    }
+    for (const wl of p.walls) {
+      let [x1, y1, x2, y2, kind, role] = wl;
+      if (role === 'slide') { x1 = x2 = slideX; }
+      let a = 1, col = C['scene-ink'];
+      if (role === 'remove') a = removeA;
+      const flash = (role === 'try' && t > 2.4 && t < 5.4) || (role === 'spine' && t > 4.6 && t < 7.4);
+      if (flash && Math.sin(t * 14) > 0) col = C.poor;
+      ctx.globalAlpha = a; ctx.strokeStyle = col; ctx.lineCap = 'square';
+      ctx.lineWidth = kind === 'lb' ? Math.max(3, sc * .32) : Math.max(1.2, sc * .1);
+      seg2(X(x1), Y(y1), X(x2), Y(y2)); ctx.globalAlpha = 1; ctx.lineCap = 'butt';
+    }
+    for (const [a, z] of p.windows) {
+      ctx.fillStyle = C.room; ctx.fillRect(X(a), Y(0) - sc * .2, (z - a) * sc, sc * .4);
+      ctx.strokeStyle = C.glass; ctx.lineWidth = 1; seg2(X(a), Y(0) - 1.5, X(z), Y(0) - 1.5); seg2(X(a), Y(0) + 1.5, X(z), Y(0) + 1.5);
+    }
+    if (p.cols) { ctx.fillStyle = C['scene-ink']; for (const [cx, cy] of p.cols) ctx.fillRect(X(cx) - sc * .22, Y(cy) - sc * .22, sc * .44, sc * .44); }
+    /* the interactive moment */
+    if (i === 0 && t > 2.2 && t < 5.6) {
+      hammer(X(3.2) + 8, Y(1.6), Math.abs(Math.sin(t * 9)) * .7);
+      ctx.globalAlpha = seg(t, 2.4, 2.8); tag(X(3.2), Y(0) - 6, 'Load-bearing: can’t remove', { border: C.poor }); ctx.globalAlpha = 1;
+    }
+    if (i === 1) {
+      if (t > 2.2 && t < 4.6) { ctx.globalAlpha = seg(t, 2.2, 2.6) * (1 - seg(t, 4.2, 4.6)); tag(X(4.2), Y(0) - 6, 'Partition: can go'); ctx.globalAlpha = 1; }
+      if (t > 4.6) { ctx.globalAlpha = seg(t, 4.6, 5); tag(X(4.8), Y(0) - 6, 'Spine wall stays', { border: C.poor }); ctx.globalAlpha = 1; }
+    }
+    if (i === 2 && t > 2) { ctx.globalAlpha = seg(t, 2, 2.5); tag(b.cx, Y(0) - 6, 'Walls move, columns stay'); ctx.globalAlpha = 1; }
+    /* ceiling section */
+    const sp = secH / 3.8, base = L.ground - 4, cy = base - p.ceil * sp, cyA = lerp(base - 3.7 * sp, cy, ease(seg(t, .3, 1.6)));
+    const sx0 = b.cx - Math.min(boxW, 150) / 2, sx1 = b.cx + Math.min(boxW, 150) / 2;
+    ctx.fillStyle = C.room; ctx.fillRect(sx0, cyA, sx1 - sx0, base - cyA);
+    ctx.fillStyle = i === 1 ? (P.brick || C['brick-face']) : C.concrete;
+    ctx.fillRect(sx0, cyA - 6, sx1 - sx0, 6); ctx.fillRect(sx0, base, sx1 - sx0, 4);
+    ctx.strokeStyle = C['scene-ink']; ctx.lineWidth = 1; ctx.strokeRect(sx0, cyA - 6, sx1 - sx0, 6);
+    person(sx0 + (sx1 - sx0) * .35, base, 1.75 * sp);
+    const dx = sx1 - 12; ctx.strokeStyle = C['scene-ink-2']; seg2(dx, cyA, dx, base);
+    seg2(dx - 3, cyA, dx + 3, cyA); seg2(dx - 3, base, dx + 3, base);
+    ctx.font = `700 ${L.small ? 10 : 13}px ${F.display}`; ctx.fillStyle = C[T[i].key]; ctx.textAlign = 'right';
+    ctx.fillText(`${(lerp(3.7, p.ceil, ease(seg(t, .3, 1.6)))).toFixed(1)} m`, dx - 5, (cyA + base) / 2 + 4);
+  }
+  names(['44 m² · walls fixed', '60 m² · partly fixed', '52 m² · free plan']);
+  hud('', '');
+}
+
+/* 8 — ageing */
+const AGE = [
+  { life: [25, 50], ev: [[18, 'Joint sealant fails: drafts, leaks, mould'], [38, 'Retrofit: insulation wrap + new windows'], [60, 'Past design life, still lived in'], [95, 'Renovate again, or demolish']] },
+  { life: [100, 150], ev: [[32, 'New roof and windows'], [70, 'Mortar repointed'], [100, 'Still sound after a century']] },
+  { life: [50, 100], skin: [20, 40], ev: [[15, 'Sealants and gaskets renewed'], [26, 'Fogged glazing units swapped'], [40, 'Whole curtain wall replaced'], [80, 'Second re-clad; frame still sound']] },
+];
+function sTime(t) {
+  const yr = 120 * seg(t, .4, 14.2);
+  street('day');
+  const rl = 9 * ease(seg(yr, 38, 43));
+  building(0, {
+    retro: f => f < rl,
+    dirt: f => f < rl ? 0 : clamp(yr / 36, 0, 1),
+  });
+  if (yr > 43) { ctx.fillStyle = A(C.grime, .12 * seg(yr, 43, 120)); ctx.fillRect(L.b[0].x - 2, L.b[0].top, L.b[0].w + 4, L.b[0].h); }
+  building(1, {});
+  {
+    const b = L.b[1], rep = yr > 70 ? .5 : 1, pat = Math.min(.3, yr / 120 * .34) * rep;
+    ctx.fillStyle = A(C.grime, pat); ctx.fillRect(b.x, b.top - 14, b.w, b.h + 14);
+    if (yr > 25) {
+      ctx.fillStyle = A('#FFFFFF', .22 * seg(yr, 25, 60) * rep);
+      for (let n = 0; n < 9; n++) { ctx.beginPath(); ctx.ellipse(b.x + rnd(n + 40) * b.w, L.ground - b.fh * (1 + rnd(n + 60) * .8), 4 + rnd(n) * 5, 2.5, 0, 0, 7); ctx.fill(); }
+    }
+  }
+  const sl2 = 9 * ease(seg(yr, 40, 44)), sl3 = 9 * ease(seg(yr, 80, 84));
+  building(2, {
+    newSkin: (f, j) => (yr > 80 ? f < sl3 : f < sl2) || (yr > 26 && yr < 44 && rnd(f * 13 + j) < .22),
+    dull: (f) => yr > 80 ? (f < sl3 ? 0 : 1) : yr > 40 ? (f < sl2 ? (yr - 44) / 40 : 1) * clamp(yr / 40, 0, 1) : clamp(yr / 40, 0, 1),
+  });
+  if (yr > 26 && yr < 30) {
+    const b = L.b[2]; ctx.strokeStyle = C.signal; ctx.lineWidth = 1.4;
+    for (let f = 1; f < FLOORS; f++) for (let j = 0; j < 8; j++) if (rnd(f * 13 + j) < .22) { const fh = b.fh; ctx.strokeRect(b.x + j * b.w / 12, L.ground - (f + 1) * fh, b.w / 12, fh * .78); }
+  }
+  for (let i = 0; i < 3; i++) {
+    const b = L.b[i], a = AGE[i];
+    let cur = null;
+    for (const e of a.ev) if (yr >= e[0]) cur = e;
+    if (cur) { ctx.globalAlpha = seg(yr, cur[0], cur[0] + 2.5); tag(b.cx, b.top - (i === 1 ? 20 : 16), `Yr ${cur[0]} · ${cur[1]}`, { border: C[T[i].key] }); ctx.globalAlpha = 1; }
+    const y = L.ground + 52, X = v => b.x + b.w * Math.min(v, 120) / 120;
+    ctx.fillStyle = A(C['scene-ink-2'], .2); ctx.fillRect(b.x, y, b.w, 3);
+    ctx.fillStyle = A(C[T[i].key], .45); ctx.fillRect(X(a.life[0]), y - 2, X(a.life[1]) - X(a.life[0]), 7);
+    if (a.skin) { ctx.fillStyle = A(C.poor, .5); ctx.fillRect(X(a.skin[0]), y - 2, X(a.skin[1]) - X(a.skin[0]), 7); }
+    ctx.fillStyle = C['scene-ink'];
+    for (const e of a.ev) ctx.fillRect(X(e[0]) - .5, y - 3, 1, 9);
+    ctx.fillStyle = C.signal; ctx.fillRect(X(yr) - 1.5, y - 5, 3, 13);
+  }
+  names(['design life 25–50 yrs', 'service life 100–150+ yrs', 'frame 50–100 · skin 20–40']);
+  hud(`Year ${Math.floor(yr)}`, 'after completion');
+}
+
+/* 9 — earthquake */
+let CRACKS = [];
+function makeCracks() {
+  CRACKS = [];
+  const b = L.b && L.b[1]; if (!b) return;
+  const bw = b.w / 5;
+  for (let f = 0; f < 6; f++) for (let k = 1; k < 5; k++) {
+    if (rnd(f * 9 + k * 3) < .25) continue;
+    const yt = L.ground - (f + 1) * b.fh, yb = yt + b.fh, dir = rnd(f + k * 7) < .5 ? 1 : -1;
+    const x0 = b.x + k * bw - dir * bw * .22, x1 = b.x + k * bw + dir * bw * .22, pts = [];
+    for (let s = 0; s <= 6; s++) { const q = s / 6; pts.push([lerp(x0, x1, q) + (rnd(f * 31 + k * 17 + s) - .5) * 3, lerp(yt + b.fh * .1, yb - b.fh * .05, q)]); }
+    CRACKS.push({ f, pts, th: .15 + f * .1 + rnd(f * 5 + k) * .3 });
+  }
+}
+const qEnv = t => t < 1 ? 0 : t < 3 ? ease(seg(t, 1, 3)) : t < 6.5 ? 1 : 1 - ease(seg(t, 6.5, 10));
+const xg = t => qEnv(t) * (Math.sin(2 * PI * 1.25 * t) + .35 * Math.sin(2 * PI * 2.9 * t + 1.3));
+const resp = (t, lag, f) => qEnv(t - lag) * Math.sin(2 * PI * f * (t - lag));
+function sShake(t) {
+  const G = L.colW * .028, gx = G * xg(t);
+  street('day', { off: gx });
+  const dxP = f => gx + .25 * G * resp(t, .05, 2.2) * (f / FLOORS);
+  const dxB = f => gx + .2 * G * resp(t, .03, 2.6) * (f / FLOORS);
+  const dxG = f => gx + 1.5 * G * resp(t, .18, .9) * Math.sin(PI / 2 * f / FLOORS);
+  building(0, { dx: dxP });
+  if (qEnv(t) > .5) {
+    const b = L.b[0], pw = b.w / 6;
+    ctx.fillStyle = A(C.signal, .5 + .5 * Math.sin(t * 20));
+    for (let f = 1; f < FLOORS; f++) for (let k = 1; k < 6; k++) { const yy = L.ground - f * b.fh; ctx.fillRect(b.x + k * pw + dxP(f) - 1.5, yy - 1.5, 3, 3); }
+  }
+  building(1, { dx: dxB });
+  {
+    const b = L.b[1], D = seg(t, 2.4, 7.5);
+    ctx.strokeStyle = C['scene-ink']; ctx.lineWidth = 1.2;
+    for (const c of CRACKS) {
+      if (D <= c.th) continue;
+      const q = clamp((D - c.th) / .25, 0, 1), n = Math.max(1, Math.round(q * (c.pts.length - 1))), o = dxB(c.f + .5);
+      ctx.beginPath(); ctx.moveTo(c.pts[0][0] + o, c.pts[0][1]);
+      for (let s = 1; s <= n; s++) ctx.lineTo(c.pts[s][0] + o, c.pts[s][1]);
+      ctx.stroke();
+    }
+    for (let n = 0; n < 16; n++) {
+      const ts = 3 + rnd(n + 77) * 4.2; if (t < ts) continue;
+      const x0 = b.x + rnd(n + 3) * b.w + dxB(FLOORS), vx = (rnd(n + 5) - .5) * 40, dt = t - ts;
+      let y = b.top - 8 + 260 * dt * dt, x = x0 + vx * dt;
+      if (y > L.ground - 3) { const tl = Math.sqrt((L.ground - 3 - (b.top - 8)) / 260); x = x0 + vx * tl; y = L.ground - 3 - (n % 3) * 1.6; }
+      ctx.fillStyle = n % 2 ? C.stone : C['brick-face']; ctx.fillRect(x - 1.5, y - 1, 3.4, 2.4);
+    }
+  }
+  building(2, { dx: dxG });
+  /* seismogram */
+  const sw = Math.min(200, W * .4), sx0 = W - sw - 14, sy = 34, sh = 14;
+  ctx.fillStyle = A(C.sheet, .85); ctx.fillRect(sx0 - 6, sy - sh - 8, sw + 12, sh * 2 + 20);
+  ctx.strokeStyle = C.rule; ctx.lineWidth = 1; ctx.strokeRect(sx0 - 6, sy - sh - 8, sw + 12, sh * 2 + 20);
+  ctx.strokeStyle = C.poor; ctx.lineWidth = 1.2; ctx.beginPath();
+  for (let k = 0; k <= sw; k += 2) { const tt = t - (sw - k) / sw * 4; ctx.lineTo(sx0 + k, sy + (tt > 0 ? xg(tt) * sh * .75 : 0)); }
+  ctx.stroke();
+  ctx.font = `500 9px ${F.mono}`; ctx.fillStyle = C['scene-ink-2']; ctx.textAlign = 'left'; ctx.fillText('GROUND MOTION', sx0, sy + sh + 9);
+  if (t > 9.5) {
+    const lbl = ['Stiff box: rocks, stands', 'Unreinforced: cracks, sheds bricks', 'Ductile frame: sways, recovers'];
+    for (let i = 0; i < 3; i++) { ctx.globalAlpha = seg(t, 9.5 + i * .4, 10 + i * .4); tag(L.b[i].cx, L.b[i].top - (i === 1 ? 22 : 18), lbl[i], { border: i === 1 ? C.poor : C.good }); }
+    ctx.globalAlpha = 1;
+  }
+  names(['stiff · small drift', 'brittle · cracks', 'flexible · big drift']);
+  hud('Earthquake', 'same shaking under all three');
+}
+
+/* ---------- chapter content ---------- */
+const SCENES = [
+  { tab: 'Meet', dur: 6, draw: sMeet, view: 'Street elevation', scale: '9 storeys each',
+    title: 'Three ways to stack homes',
+    lede: 'All three buildings stand on the same street with nine storeys each, so you can compare them like for like. The brick block is tallest only because its ceilings are highest.',
+    cards: [
+      { big: '1959–1990s', unit: 'Khrushchevka, Brezhnevka, P-44…', note: 'Concrete walls and floors are cast in a factory, trucked to site and craned together like a kit. Tens of millions were built across the USSR and Eastern Bloc.' },
+      { big: '1930s–1950s', unit: 'Stalinka and pre-war mid-rises', note: 'Thick walls of solid brick carry every floor down to the foundations. The Soviet “Stalinka” is the classic big-city example; similar blocks line streets all over Europe.' },
+      { big: '2000s–today', unit: 'Monolithic frame + curtain wall', note: 'A cast-in-place concrete skeleton of columns and slabs. The outside is only a skin: glass curtain wall and insulated cladding panels hung from the slab edges.' } ] },
+  { tab: 'Build', dur: 16, draw: sBuild, view: 'Construction sequence', scale: 'Days compressed',
+    title: 'How fast each one goes up',
+    lede: 'Panels arrive finished from the factory, so a crane can close in a whole storey in days. Brick rises one course at a time. The modern frame is poured floor by floor, and the facade crew clips on the skin a few floors behind.',
+    cards: [
+      { big: '6–12', unit: 'months to handover · 3–7 days per storey', rank: 'good', rankText: 'Fastest', note: 'Speed and low cost were the whole point. Panels came off factory lines (DSK plants) and were welded together on site.' },
+      { big: '18–30', unit: 'months to handover · 15–30 days per storey', rank: 'poor', rankText: 'Slowest', note: 'Every brick is laid by hand, and the mortar must gain strength before the floors above can load it.' },
+      { big: '12–20', unit: 'months to handover · 5–10 days per storey', rank: 'mid', rankText: 'Middle', note: 'The concrete frame cycles about a floor a week. The facade follows behind, then a long fit-out of services and finishes.' } ] },
+  { tab: 'Structure', dur: 10, draw: sBones, view: 'X-ray elevation + key plan', scale: 'Not to scale',
+    title: 'What holds it up',
+    lede: 'Follow the yellow load paths down to the ground. In the panelka and the brick block the walls carry the weight, so those walls can never move. In the modern building only columns, slabs and the core carry load, and the facade just has to hold itself up against the wind.',
+    cards: [
+      { big: '14–18 cm', unit: 'load-bearing concrete wall panels', rank: 'mid', rankText: 'Rigid box', note: 'Cross walls at every room line carry the floor slabs. The welded, grouted joints between panels are the critical detail; when they fail, the building leaks.' },
+      { big: '51–64 cm', unit: 'solid brick bearing walls', rank: 'mid', rankText: 'Heavy mass', note: 'The outer walls and one spine wall carry everything. They thicken toward the ground, where the load is greatest, and arches or lintels bridge each window.' },
+      { big: '~6–8 m', unit: 'column grid + concrete core', rank: 'good', rankText: 'Most adaptable', note: 'Columns and flat slabs form a skeleton. The core holds lifts and stairs and stiffens the building. The glass wall carries no floors at all.' } ] },
+  { tab: 'Winter', dur: 9, draw: sWinter, view: 'Thermal image', scale: 'Brighter = more heat lost', legend: true, ir: true,
+    title: 'Winter: where the heat leaks out',
+    lede: 'A thermal camera at −20 °C. Brighter surfaces are warmer, which means heat is escaping. Original panelka joints and old windows glow the most. The modern insulated panels barely show, but large areas of glass still lose several times more heat than the solid wall beside them.',
+    cards: [
+      { big: '0.9–1.3', unit: 'W/m²K wall U-value as built', rank: 'poor', rankText: 'Leakiest', note: 'Expanded-clay or early sandwich panels. Joints and balcony slabs act as cold bridges and make the wall effectively 20–40% worse.' },
+      { big: '1.0–1.3', unit: 'W/m²K for 51–64 cm of brick', rank: 'mid', rankText: 'Poor but steady', note: 'Thick, but brick is not an insulator. Its mass stores heat, so rooms cool slowly when the heating stops.' },
+      { big: '0.15–0.35', unit: 'W/m²K insulated panel · glass 0.5–1.9', rank: 'good', rankText: 'Best wall', note: 'Mineral-wool panels beat old walls four to five times over. Glass is the weak spot, even triple-glazed.' } ] },
+  { tab: 'Summer', dur: 13, draw: sSummer, view: 'Street elevation, one day', scale: 'Illustrative model',
+    title: 'Summer: who overheats',
+    lede: 'A hot day peaking at 31 °C, with no air conditioning and no blinds. Heavy brick soaks up heat and gives it back hours later, after dark. Glass lets the sun straight in, so the rooms heat up almost as fast as the street.',
+    cards: [
+      { big: '≈28 °C', unit: 'indoor peak, around 18:00', rank: 'mid', rankText: 'Warm', note: 'Thin walls and a poorly insulated flat roof. Top-floor flats get hot by evening.' },
+      { big: '≈25 °C', unit: 'indoor peak, late evening', rank: 'good', rankText: 'Coolest', note: 'Half-metre walls delay and soften the heat by many hours, so the hottest part of the day never reaches the rooms in full.' },
+      { big: '≈31 °C', unit: 'indoor peak, mid-afternoon', rank: 'poor', rankText: 'Hottest', note: 'Solar gain through glass. Solar-control coatings (g 0.3–0.5) and shading help, but most glass towers depend on air conditioning.' } ] },
+  { tab: 'Sound', dur: 10, draw: sSound, view: 'Section through four flats', scale: 'Wall thickness exaggerated',
+    title: 'Sound between neighbours',
+    lede: 'Music at 80 dB plays in the top-left flat. The number in the next flat shows how much gets through the party wall. Footsteps upstairs travel down through the floor. Heavier, thicker, better-sealed construction blocks more.',
+    cards: [
+      { big: '45–50 dB', unit: 'airborne insulation, Rw', rank: 'poor', rankText: 'Noisiest', note: 'Thin concrete panels and leaky joints let through TV, voices and plumbing. Thin floors without floating screeds carry every footstep.' },
+      { big: '55–60 dB', unit: 'airborne insulation, Rw', rank: 'good', rankText: 'Quietest walls', note: 'Massive brick walls block airborne sound well. Old timber floors can still creak and pass on footsteps.' },
+      { big: '50–60 dB', unit: 'airborne insulation, Rw', rank: 'mid', rankText: 'Depends', note: 'Thick slabs with floating screeds stop footsteps. Party walls vary with what the developer chose, and noise can creep along the facade.' } ] },
+  { tab: 'Space', dur: 11, draw: sSpace, view: 'Plan + section', scale: 'Plans at one common scale',
+    title: 'Space inside',
+    lede: 'A typical two-room flat in each building, all drawn at the same scale. Thick dark lines are load-bearing and cannot be removed; thin lines are partitions you can move. The section below shows the ceiling height against a 1.75 m person.',
+    cards: [
+      { big: '2.5 m', unit: 'ceilings · 40–46 m² two-room flat', rank: 'poor', rankText: 'Tightest', note: 'Compact rooms, a 6 m² kitchen and a combined bathroom. Most interior walls are structural, so the layout is fixed for life.' },
+      { big: '3.2 m', unit: 'ceilings · 55–65 m² two-room flat', rank: 'good', rankText: 'Most generous', note: 'High ceilings, big rooms and a real kitchen. Partitions between rooms can often go; the spine wall must stay.' },
+      { big: '2.8 m', unit: 'ceilings · 45–60 m² two-room flat', rank: 'good', rankText: 'Most flexible', note: 'Only columns and the core are fixed, so walls can be moved or left out for an open kitchen-living room.' } ] },
+  { tab: 'Ageing', dur: 15, draw: sTime, view: 'Elevation over 120 years', scale: '1 second ≈ 8.5 years',
+    title: 'A century of wear',
+    lede: 'Panelka joints fail first. Many blocks have since been wrapped in insulation and new windows; others are being demolished. Brick ages slowly. A glass skin wears out long before the concrete frame behind it. The bar under each building marks its expected life.',
+    cards: [
+      { big: '25–50', unit: 'years design life · 70–100 in practice', rank: 'mid', rankText: 'Outlives its plan', note: 'Design life is quoted as both 25 and 50 years. Structures usually prove sound; resealed joints can add 20–25 years, and a full retrofit more.' },
+      { big: '100–150+', unit: 'years service life', rank: 'good', rankText: 'Longest', note: 'Keep the water out and repoint the mortar every 60–80 years, and it keeps going.' },
+      { big: '20–40', unit: 'years for the skin · 50–100 for the frame', rank: 'poor', rankText: 'Skin wears out', note: 'Sealants, gaskets and glazing-unit seals fail first. Expect to replace the whole curtain wall at least once in the frame’s life.' } ] },
+  { tab: 'Earthquake', dur: 12, draw: sShake, view: 'Elevation under shaking', scale: 'Drift exaggerated',
+    title: 'Earthquake',
+    lede: 'The same ground motion under all three. Real behaviour depends on design and workmanship, so this shows typical tendencies. In the 1988 Spitak earthquake in Armenia, large-panel blocks generally stood, while precast concrete frame buildings and old masonry suffered most of the collapses.',
+    cards: [
+      { big: 'Stiff', unit: 'cellular box of walls', rank: 'good', rankText: 'Performs well', note: 'Walls in both directions make a rigid, redundant box. Panel buildings generally came through Spitak, though some joints cracked.' },
+      { big: 'Brittle', unit: 'unreinforced masonry', rank: 'poor', rankText: 'Most vulnerable', note: 'Unreinforced brick cracks diagonally between windows and sheds parapets and cornices. Reinforced or confined masonry does far better.' },
+      { big: 'Flexible', unit: 'ductile concrete frame + core', rank: 'good', rankText: 'Good if code-built', note: 'A frame designed to a seismic code sways much more but bends without breaking, and the curtain wall is detailed to rack with it.' } ] },
+];
+
+/* ---------- UI wiring ---------- */
+const indexEl = document.getElementById('index');
+const tabs = SCENES.map((s, i) => {
+  const b = document.createElement('button');
+  b.type = 'button'; b.setAttribute('role', 'tab'); b.id = 'tab-' + i;
+  b.innerHTML = `<span class="n">${String(i + 1).padStart(2, '0')}</span><span class="l">${s.tab}</span>`;
+  b.addEventListener('click', () => { setScene(i); if (!reduce) setPlaying(true); });
+  indexEl.appendChild(b); return b;
+});
+indexEl.addEventListener('keydown', e => {
+  if (e.key !== 'ArrowRight' && e.key !== 'ArrowLeft') return;
+  e.preventDefault();
+  const n = (si + (e.key === 'ArrowRight' ? 1 : SCENES.length - 1)) % SCENES.length;
+  setScene(n); tabs[n].focus();
+});
+const playBtn = document.getElementById('play'), restartBtn = document.getElementById('restart'), scrub = document.getElementById('scrub'), tourBox = document.getElementById('tour');
+const cards = [...document.querySelectorAll('#readout .card')];
+let si = 0, t = 0, playing = !reduce, holdT = 0, scrubbing = false;
+tourBox.checked = !reduce;
+function setPlaying(p) { playing = p; playBtn.textContent = p ? 'Pause' : (t >= SCENES[si].dur ? 'Play again' : 'Play'); }
+function setScene(i) {
+  si = i; t = reduce ? SCENES[i].dur : 0; holdT = 0;
+  const S = SCENES[i];
+  tabs.forEach((b, k) => { b.setAttribute('aria-selected', k === i ? 'true' : 'false'); b.tabIndex = k === i ? 0 : -1; b.style.setProperty('--p', k < i ? 1 : 0); });
+  document.getElementById('capTitle').textContent = S.title;
+  document.getElementById('capLede').textContent = S.lede;
+  document.getElementById('tbSheet').textContent = `${String(i + 1).padStart(2, '0')} / ${String(SCENES.length).padStart(2, '0')}`;
+  document.getElementById('tbView').textContent = S.view;
+  document.getElementById('tbScale').textContent = S.scale;
+  cv.setAttribute('aria-label', `${S.title}. ${S.lede}`);
+  legend.hidden = !S.legend;
+  wrapEl.classList.toggle('ir', !!S.ir);
+  S.cards.forEach((c, k) => {
+    const el = cards[k];
+    el.querySelector('.big').textContent = c.big;
+    el.querySelector('.unit').textContent = c.unit;
+    const r = el.querySelector('.rank');
+    r.hidden = !c.rank; r.className = 'rank ' + (c.rank || ''); r.textContent = c.rankText || '';
+    el.querySelector('.note').textContent = c.note;
+  });
+  hudCache = ''; hud('', '');
+  setPlaying(playing);
+}
+playBtn.addEventListener('click', () => {
+  if (!playing && t >= SCENES[si].dur) { t = 0; holdT = 0; }
+  setPlaying(!playing);
+});
+restartBtn.addEventListener('click', () => { t = 0; holdT = 0; setPlaying(true); });
+scrub.addEventListener('input', () => { scrubbing = true; t = scrub.value / 1000 * SCENES[si].dur; holdT = 0; });
+scrub.addEventListener('change', () => { scrubbing = false; });
+tourBox.addEventListener('change', () => { if (tourBox.checked && t >= SCENES[si].dur) holdT = 0; });
+
+/* ---------- loop ---------- */
+let last = performance.now();
+function draw() {
+  ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+  ctx.clearRect(0, 0, W, H);
+  SCENES[si].draw(t);
+}
+function frame(now) {
+  const dt = Math.min(.05, (now - last) / 1000); last = now;
+  if (playing) {
+    gt += dt;
+    const S = SCENES[si];
+    if (t < S.dur) t = Math.min(S.dur, t + dt);
+    else {
+      holdT += dt;
+      if (tourBox.checked && holdT > 2.4) {
+        if (si < SCENES.length - 1) setScene(si + 1); else setPlaying(false);
+      } else if (!tourBox.checked) setPlaying(false);
+    }
+  }
+  draw();
+  if (!scrubbing) scrub.value = Math.round(t / SCENES[si].dur * 1000);
+  tabs[si].style.setProperty('--p', (t / SCENES[si].dur).toFixed(3));
+  requestAnimationFrame(frame);
+}
+
+readTheme();
+resize();
+let start = 0;
+const hash = (location.hash || '').slice(1).toLowerCase();
+const fromHash = SCENES.findIndex(s => s.tab.toLowerCase() === hash);
+if (fromHash >= 0) start = fromHash;
+setScene(start);
+new ResizeObserver(() => { resize(); draw(); }).observe(wrapEl);
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change', readTheme);
+new MutationObserver(readTheme).observe(root, { attributes: true, attributeFilter: ['data-theme'] });
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => draw());
+requestAnimationFrame(frame);
+})();
+</script>
