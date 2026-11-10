@@ -190,9 +190,10 @@ give the player a little control over luck, at a price.
 - **Flashback:** spend 1 to establish something the character plausibly
   prepared earlier (a bribe placed, a letter carried, a watch posted). You
   may refuse the implausible, or ask for a check on how well it was done.
-- **Earning:** 1 on a DISASTER. 1 when the player accepts a hard bargain you
-  offer: a complication that comes out of the character's own troubles,
-  taken on voluntarily. Chapters restore it as the ruleset says.
+- **Earning:** 1 on a DISASTER that stands (one that is rerolled away earns
+  nothing). 1 when the player accepts a hard bargain you offer: a
+  complication that comes out of the character's own troubles, taken on
+  voluntarily. Chapters restore it as the ruleset says.
 
 ## Clocks and conditions
 
@@ -282,10 +283,11 @@ Habits that keep a long game coherent:
 
 - Follow the tone and narration settings in `game.md`.
 - Give the scene, then stop where the character has a decision to make. Do
-  not close with a menu of options; the open question is the prompt. When the
-  player asks what they could do, answer through the fiction: what an adviser
-  suggests (advisers have opinions and blind spots), what the character's
-  experience tells them.
+  not close by listing what they could do, as a menu or folded into a
+  sentence; the situation is the prompt, and finding the options is the
+  player's part of the game. When the player asks what they could do, answer
+  through the fiction: what an adviser suggests (advisers have opinions and
+  blind spots), what the character's experience tells them.
 - Do not speak, decide or feel for the player's character.
 - People in the world talk like themselves, want things in every
   conversation, and do not exist to deliver information.
