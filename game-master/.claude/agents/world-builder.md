@@ -72,6 +72,12 @@ Use short kebab-case file names.
 - Do not write `state.md`; the game master does that with the player. Do not
   touch `game.md`, `rules.md`, `chronicle.md` or `rolls.log`.
 
+Work in this order, so that an interrupted run still leaves a usable
+skeleton: first `secrets/fronts.md` and `index.md` (every entity you plan to
+write, one line each), then the `secrets/` files, then the `world/` files.
+Write several files per turn, with parallel Write calls, not one at a time:
+there are dozens of them and the player is waiting.
+
 Keep `index.md` lines to one line and `secrets/fronts.md` under about 150
 lines. Then run `python3 engine/game.py check <game>` from the game-master
 folder and fix what it reports about your files (warnings about unfilled

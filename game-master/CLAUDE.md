@@ -214,7 +214,10 @@ Nothing waits for the character. Each game's `rules.md` defines a world turn
 and when it runs; run it on schedule, with the `world-turn` subagent when it
 is available (it works from the files with no knowledge of the chat, which
 keeps factions acting on their own interests and not on what would suit the
-scene), or by hand following the same steps. Save before it runs.
+scene), or by hand following the same steps. Save before it runs, give the
+subagent the span of game time and what the character visibly did in it, and
+run it in the foreground (`run_in_background: false`) so its news arrives
+before the next scene.
 
 People and factions want things for their own reasons, act on partial
 information, make mistakes, and deal with each other. They remember what

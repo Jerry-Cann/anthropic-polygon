@@ -57,6 +57,10 @@ names or facts already mentioned. If that subagent is not available in this
 session, start a general-purpose subagent and tell it to follow
 `.claude/agents/world-builder.md`.
 
+Run it in the foreground (`run_in_background: false` on the Agent call) and
+wait for it: every later step needs its result. It writes dozens of files
+and takes several minutes, so tell the player that first.
+
 It returns only what the character would know. Share that with the player as
 the lay of the land. Then read `index.md` and `secrets/fronts.md` yourself.
 
